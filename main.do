@@ -1,9 +1,10 @@
 /*
 
-Authors: Donald Bowen and Jerome Taillard 
-Title:   Revisiting Board Independence Mandates: Evidence from Director Reclassifications
-		 Review of Finance (2025)
-Data:    January 2025 
+Authors:   Donald Bowen and Jerome Taillard 
+Title:     Revisiting Board Independence Mandates: Evidence from Director Reclassifications
+		   Review of Finance (2025)
+Data:      January 2025 
+Versions:  Stata 18.0MP, schemepack v1.4, grc1leg2 v2.26, reghdfe v5.7.3
 
 ================================================================================
 
@@ -22,6 +23,8 @@ Data:    January 2025
 					ISS_cusip6_to_CCM_cusip6.csv
 					new_SGA_data.xlsx
 					new_independence_data.dta
+					psuedo_fy_panel.dta 
+					psuedo_cusip_R_t.dta
 				
 				While running this code, additional files will be created:
 					LifeCycles.dta 
@@ -32,7 +35,7 @@ Data:    January 2025
 			
 	To run this analysis, users need to 
 	
-		1. Specify paths to input files (see below)
+		1. Obtain licensed input files and specify paths to them (see below)
 		
 		2. If needed, install some stata packages (see top of code below)
 		
@@ -99,13 +102,29 @@ Data:    January 2025
 	* Obtain these files from WRDS
 	*************************************************************************
 	
+	/* set using_fake_data equal to 0 or 1
+	
+	   if using_fake_data = 1, then
+			the code will skip all data creation steps (LifeCycles, Execucomp, 
+			formatting director data, create firm-year panel)
+			and skip making Table 1 (which happens when we create firm-year panel)
+			and skip exhibits based on WRDS downloads or data files we didn't 
+			create (Tables 8, 9, 10, 11, IA1, IA3, IA4 lpus Figues 1 and IA1)
+			
+	   if using_fake_data = 0, then
+			you must have all of the inputs files obtained, downloaded, and set 
+			the paths below to point to the files 
+	*/
+	global using_fake_data    0          // put 1 or 0 here  
+	assert inlist($using_fake_data, 0,1) // leave as-is 
+	
 	* set input paths for user obtained files 	  
 	global ccm_raw            "inputs_noupload/ccm_annual_1960_2012_full"
 	global crsp_monthly       "inputs_noupload/crsp_monthly_1960_2011_full"
 	global dir_raw            "inputs_noupload/directors_legacy_all"
 	global execu_raw          "inputs_noupload/execu_1992-2012_full"
 	global completed_mergers  "inputs_noupload/sdc_acq_completed"
-	
+		
 	*************************************************************************
 	* END: USERS NEED TO MODIFY THIS, THE REMAINDER OF FILE WILL RUN
 	*************************************************************************
@@ -123,6 +142,12 @@ Data:    January 2025
 	* derived data (board) will go here, with these file names
 	global board_lvl_out      "$temp/board_level_data"   
 	global dir_lvl_out        "$temp/dir_level_data"     
+	
+	* for users running this code without all licensed data 
+	if $using_fake_data == 1 {
+		copy inputs/psuedo_fy_panel.dta    temp/fy_panel.dta  , replace
+		copy inputs/psuedo_cusip_R_t.dta   temp/cusip_R_t.dta , replace
+	}
 	 
 	* set output paths  
 	global output_folder      "outputs"
@@ -256,7 +281,7 @@ capture confirm file "inputs/LifeCycles.dta"
 if _rc==0 { // make the file only if not made
 	di "Skipping, already made"
 }
-else {
+else if $using_fake_data == 0 {
 	cd "inputs"
 
 	local url "https://faculty.marshall.usc.edu/Gerard-Hoberg/HobergMaxLifeCycles/idata/LifeCycleDatabase.zip"
@@ -300,7 +325,7 @@ capture confirm file "$temp/gvkey_fyear_ceoinfo.dta"
 if _rc==0 { // make the file only if not made
 	di "Skipping, already made"
 }
-else {
+else if $using_fake_data == 0 {
 **** prep for execumcomp work, we'll want some ccm info
 
 	use gvkey lpermno datadate cusip fyear if fyear > 1993 using "$ccm_raw", clear
@@ -421,14 +446,16 @@ capture confirm file "$board_lvl_out.dta"
 if _rc==0 { // make the file only if not made
 	di "Skipping, already made"
 }
-else {	
+else if $using_fake_data == 0 {
 	do format_ISS_director_data.do 
 }	
 
 *************************************************************************
-* BEGIN: define treatment and reclassifier firms
+* BEGIN: define non-compliant and reclassifier firms
 *************************************************************************
-{
+
+if $using_fake_data == 0 {
+
 	* first, these are matches where the cusip6 fails (bc cusip6 in CCM and ISS disagree),
 	* but firmname and other info confirms a match
 	* we will use this lookup table to change the cusip6 in irrc before the merge to CCM
@@ -440,6 +467,7 @@ else {
 	save `ccm_cusip6_lookup', replace
 
 	* define committee level non-compliance
+	
 	use "$dir_lvl_out", clear
 	rename *man *
 
@@ -486,13 +514,14 @@ else {
 	replace cusip6 = cusip6_ccm if _m == 3 & !missing(cusip6_ccm)
 	drop cusip6_ccm _m 
 
-	save "$temp/cusip_R_t_2002_2006.dta", replace
+	save "$temp/cusip_R_t.dta", replace
 }	
 *************************************************************************
-* BEGIN: create firm-year panel > $temp/fy_panel_nobandwidth
+* BEGIN: create firm-year panel > $temp/fy_panel
 * build Table 1 as we go (Sample Selection Criteria aka "waterfall")
 *************************************************************************
-{
+
+if $using_fake_data == 0 {
 	
 	* get gvkey fyear xsga from manual work (doesn't impact conclusions, but is correct data)
 
@@ -686,7 +715,7 @@ else {
 	// the CUSIPs in the board data do not match to multiple gvkeys, so we can just go ahead and merge
 	
 	g	cusip6				= substr(cusip,1,6)
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	duplicates report cusip6 fyear // < proves that CUSIPs in the board data do not match to multiple gvkeys
 	
 	sort gvkey fyear	
@@ -742,12 +771,12 @@ else {
 	
 	// drop t R so that you must be explicit every time you load panel
 	drop R t t_Comm firm_name_in_irrc
-	save "$temp/fy_panel_nobandwidth", replace
+	save "$temp/fy_panel", replace
 }
 
 	* finish waterfall table - get to baseline regression
 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
 	define_DDD_vars -5 5 2003 
 	distinct gvkey if close  & fyear >= 1999
@@ -774,7 +803,8 @@ else {
 ****************************************************************
 * Fig 1: Board stats over time by group 
 ****************************************************************	
-{
+if $using_fake_data == 0 {
+	
 	use "$dir_lvl_out", clear	
 	collapse (sum) former_emp, by(cusip6 fyear)
 	tempfile former_emp_count
@@ -794,8 +824,8 @@ else {
 		
 	* now load firm-year data
 	
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -967,8 +997,8 @@ else {
 * controls are lagged, as in the main specification
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1002,8 +1032,8 @@ else {
 * Table 3: balance
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 
@@ -1069,8 +1099,8 @@ else {
 * Table 4: main DDD
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1114,8 +1144,8 @@ else {
 		
 	foreach v in prof_a prof_sale  {
 		
-		use "$temp/fy_panel_nobandwidth", clear 
-		merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+		use "$temp/fy_panel", clear 
+		merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 		define_DDD_vars -5 5 2003 
 		xtset gvkey fyear
 
@@ -1227,8 +1257,8 @@ else {
 * Table 5: DD by subsamples 
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1292,8 +1322,8 @@ else {
 * Table 6: falsification
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2001 // close = 1 if firm within 5 of cutoff in 2001, p=fyear>=2001
 	xtset gvkey fyear
 		
@@ -1337,8 +1367,8 @@ else {
 * Table 7: mechanism
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 		
@@ -1458,9 +1488,10 @@ else {
 *************************************************************************
 * Table 8: CG07 style event study - Table IV, Panel C: FF4 alphas 
 *************************************************************************
-{
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+if $using_fake_data == 0 {
+	
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1628,7 +1659,9 @@ else {
 * Table 9: R/NR director comparisons (Dir_traits_raw)
 * Table 10: in/out director comparisons (Dir_turnover_tComm_raw)
 ****************************************************************	
-{
+
+if $using_fake_data == 0 {
+	
 *** get common shares as of 10k to fill in missing votecref (ISS stopped collecting after 2003)
 
 	use gvkey lpermno datadate cusip fyear csho if fyear > 1993 using "$ccm_raw", clear
@@ -1641,8 +1674,8 @@ else {
 	
 *** get list of sample firms - we just want turnover info at these firm, along with R and t_Comm 
 
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 		
@@ -1815,7 +1848,9 @@ else {
 ****************************************************************
 * Table 11: Board stats at non-compliant firms
 ****************************************************************
-{	
+
+if $using_fake_data == 0 {
+		
 	* get board level tenure and former employment 
 	
 	use "$dir_lvl_out", clear
@@ -1827,8 +1862,8 @@ else {
 	
 	* now load our firm year panel
 	
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1934,8 +1969,8 @@ else {
 * Table 12: CEO pay (continuation of code, not isolated block)
 *************************************************************************
 {	
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -1994,7 +2029,13 @@ Leave 1 percent out -> L1perc_data.txt is the output
 
 */
 {
-	local N 10000 // number of trials to run
+	
+	if $using_fake_data == 0 {
+		local N 10000 // number of trials to run
+	}
+	else {
+		local N 100 // just enough to plot 
+	}
 
 	*ssc install schemepack, replace (to get white_tableau)
 	set scheme white_tableau 
@@ -2003,13 +2044,13 @@ Leave 1 percent out -> L1perc_data.txt is the output
 	local tvar t_Comm
 		
 	cap file close L20_data
-	file open L20_data using "$output_folder/L1percO_data.txt", write text replace
+	file open  L20_data using "$output_folder/L1percO_data.txt", write text replace
 	file write L20_data "iteration,beta,tstat" _n
 	
 	*** prep 
 
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	cap g sic2 = floor(sic3/10)
@@ -2127,7 +2168,18 @@ Leave 1 percent out -> L1perc_data.txt is the output
 		
 	// graph t-stats 
 			   
-	twoway (histogram  tstat  ,  percent  start(1) bins(30) pstyle( p1bar)  lw(none)  ) ///
+	if $using_fake_data == 0 {
+		local start_tstat 1
+		local start_beta  0.01
+	}
+	else {
+		sum tstat 
+		local start_tstat = `r(min)'-.5
+		sum beta 
+		local start_beta  = `r(min)'-.5
+	}
+	
+	twoway (histogram  tstat  ,  percent  start(`start_tstat') bins(30) pstyle( p1bar)  lw(none)  ) ///
 		   , ///
 		   xline(1.96, lc(red) lp(dash) lstyle(foreground))  /// 
 		   xline(1.65, lc(red) lp(dash) lstyle(foreground)) ///
@@ -2136,7 +2188,7 @@ Leave 1 percent out -> L1perc_data.txt is the output
 		   ysize(6) xsize(3)  xlabel(,labsize(medlarge)) ylabel(,labsize(medlarge)) ///
 		   name(tstats, replace)
 	
-	twoway (histogram  beta  ,  percent start(0.01) bins(30) pstyle( p1bar)  lw(none) ) ///
+	twoway (histogram  beta  ,  percent start(`start_beta') bins(30) pstyle( p1bar)  lw(none) ) ///
 		   , ///
 		   by(yvar2, rows(4) title("{&beta}{subscript:1}", size(large)) note("") subtitle(" ", size(medlarge)  margin(l+0 r+0 b-1 t-1)) ) ///
 		   ytitle("") xtitle("") /// subtitle("")   ///
@@ -2155,42 +2207,18 @@ Leave 1 percent out -> L1perc_data.txt is the output
 	g pabove10 = tstat < 1.65
 	tabstat pabove* , by(yvar) s(mean count sum)
 	
-/*
-N=10,000
-
-            yvar |   pabove5  pabove10
------------------+--------------------
-(1) ROA, no cont |         0         0
-                 |     10000     10000
-                 |         0         0
------------------+--------------------
-(2) ROA, with co |         0         0
-                 |     10000     10000
-                 |         0         0
------------------+--------------------
-(3) Profit Margi |     .0767     .0012
-                 |     10000     10000
-                 |       767        12
------------------+--------------------
-(4) Profit Margi |     .8792       .01
-                 |     10000     10000
-                 |      8792       100
------------------+--------------------
-           Total |   .238975     .0028
-                 |     40000     40000
-                 |      9559       112
---------------------------------------
-*/	
 }	
 
 ********************************************************************************
 * Fig IA1: director propensity to be on committee in event time around reclassification
 ********************************************************************************
-{
+
+if $using_fake_data == 0 {
+	
 *** get main sample firms 
 
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 		
@@ -2273,7 +2301,9 @@ N=10,000
 ****************************************************************
 * Table IA1: Count of NC and R, by independence definition 
 ****************************************************************
-{	
+
+if $using_fake_data == 0 {
+	
 * load director level data with all variations of definition of Independent
 	
 	use  "$dir_lvl_out", clear
@@ -2331,8 +2361,8 @@ N=10,000
 
 		* get sample of main test
 		
-		use "$temp/fy_panel_nobandwidth", clear 
-		merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+		use "$temp/fy_panel", clear 
+		merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 		define_DDD_vars -5 5 2003 
 		xtset gvkey fyear						
 		reghdfe prof_a Rpt_Comm Rp pt_Comm if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2)	nocons
@@ -2382,8 +2412,8 @@ N=10,000
 * Table IA2: board summary stats
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -2427,7 +2457,9 @@ N=10,000
 * Table IA3: merger activity test - propensity, CARs, goodwill impairment 
 * involves one-time manual intermediate step to go to event-study-wrds
 ********************************************************************************
-{
+
+if $using_fake_data == 0 {
+	
 * get CAR -2,2 for mergers in our sample
 * get event study datasets - with ARs, etc. 
 * put outputs in merger_CARs folder (key file: merger_CARs/event-level_CAPM.dta)
@@ -2441,7 +2473,7 @@ N=10,000
 	keep dealnum ayear gvkey adate transvalue 
 	rename ayear fyear
 	count
-	merge m:1 gvkey fyear using "$temp/fy_panel_nobandwidth", keep(3) keepusing(lpermno) nogen // reduce to our sample, get permno
+	merge m:1 gvkey fyear using "$temp/fy_panel", keep(3) keepusing(lpermno) nogen // reduce to our sample, get permno
 	tostring adate, g(date_text2) format(%tdCYND) force
 	
 	preserve 
@@ -2505,7 +2537,7 @@ N=10,000
 	distinct dealnum
 	
 	preserve
-		use lpermno gvkey fyear datadate using "$temp/fy_panel_nobandwidth", clear
+		use lpermno gvkey fyear datadate using "$temp/fy_panel", clear
 		tempfile fy_id
 		save `fy_id'
 	restore
@@ -2534,8 +2566,8 @@ N=10,000
 	
 	* merge to sample 
 	
-	merge 1:1 gvkey fyear using "$temp/fy_panel_nobandwidth"
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	merge 1:1 gvkey fyear using "$temp/fy_panel"
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -2598,7 +2630,9 @@ N=10,000
 ********************************************************************************	
 * Table IA4: risk taking 
 ********************************************************************************
-{
+
+if $using_fake_data == 0 {
+	
 	* point here is to look at risk taking, per Ref #2 point abotu mechanism. 
 
 	* idio using beta loading from prior year 
@@ -2615,8 +2649,8 @@ N=10,000
 	
 	* get permnos in main test
 	
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 		
@@ -2770,11 +2804,11 @@ N=10,000
 	* merge in sample 
 	
 	rename permno lpermno
-	merge 1:1 lpermno datadate using "$temp/fy_panel_nobandwidth", keep(2 3) nogen
+	merge 1:1 lpermno datadate using "$temp/fy_panel", keep(2 3) nogen
 	
 	* now run main test
 	
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	
@@ -2824,8 +2858,8 @@ N=10,000
 * Table IA5: other Y   
 *************************************************************************
 {
-	use "$temp/fy_panel_nobandwidth", clear 
-	merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+	use "$temp/fy_panel", clear 
+	merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 	define_DDD_vars -5 5 2003 
 	xtset gvkey fyear
 	

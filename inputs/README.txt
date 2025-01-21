@@ -16,4 +16,9 @@ new_SGA_data.xlsx
 
 	cogs2 and xsga2 are versions of cogs and xsga that are harmonized across observations of a firm so 
 	that changes to accounting treatment during the sample period do not drive estimations. This data 
-	collection process was initiated to fill in missing SGA data. 
+	collection process was initiated to fill in missing SGA data.
+
+psuedo_fy_panel.dta and psuedo_cusip_R_t.dta
+
+	These allow users to run the analysis code without obtaining all 
+	the necessary data files. 

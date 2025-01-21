@@ -4,3 +4,4 @@ event-level_CAPM.dta
 permno_dates_for_eventus.txt
 temp/*
 ~*
+make_pseudo.do

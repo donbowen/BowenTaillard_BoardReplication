@@ -2,33 +2,34 @@
       name:  <unnamed>
        log:  C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication\outputs/log_Analysis.log
   log type:  text
- opened on:  20 Jan 2025, 17:46:11
-r; t=0.00 17:46:11
+ opened on:  21 Jan 2025, 00:43:32
+r; t=0.00 0:43:32
 
 . 
 . ****************************************************************
 . * Fig 1: Board stats over time by group 
 . ****************************************************************        
-. {
+. if $using_fake_data == 0 {
+.         
 .         use "$dir_lvl_out", clear       
-r; t=0.09 17:46:11
+r; t=0.11 0:43:32
 .         collapse (sum) former_emp, by(cusip6 fyear)
-r; t=0.09 17:46:11
+r; t=0.11 0:43:32
 .         tempfile former_emp_count
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         save `former_emp_count'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000a.tmp saved as .dta format
-r; t=0.00 17:46:11
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000a.tmp saved as .dta format
+r; t=0.00 0:43:32
 .         
 .         * to update cusip6 to match CCM'R 6 digit cusip (so we can merge in R and t_Comm)
 .         import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.02 17:46:11
+r; t=0.02 0:43:32
 .         rename cusip6_irrc cusip6 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         tempfile ccm_cusip6_lookup
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         merge 1:m cusip6 using `former_emp_count'
 (variable cusip6 was str6, now str8 to accommodate using data's values)
 
@@ -40,14 +41,14 @@ r; t=0.00 17:46:11
 
     Matched                               243  (_merge==3)
     -----------------------------------------
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         replace cusip6_ccm = cusip6 if missing(cusip6_ccm)
 (17,767 real changes made)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         drop cusip6 _m firm_name* // the irrc cusip6
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         rename cusip6 cusip6
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         mdesc
 
     Variable    |     Missing          Total     Percent Missing
@@ -56,25 +57,25 @@ r; t=0.00 17:46:11
           fyear |           0         18,010           0.00
    former_emp~n |           0         18,010           0.00
 ----------------+-----------------------------------------------
-r; t=0.00 17:46:11
+r; t=0.01 0:43:32
 .         tempfile former_emp_count
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         save `former_emp_count'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000c.tmp saved as .dta format
-r; t=0.00 17:46:11
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000c.tmp saved as .dta format
+r; t=0.00 0:43:32
 .                 
 .         * now load firm-year data
 .         
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:11
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:43:32
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:11
+r; t=0.03 0:43:32
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -104,16 +105,16 @@ r; t=0.02 17:46:11
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:11
+r; t=0.01 0:43:32
 .         
 .         eststo clear
-r; t=0.00 17:46:11
+r; t=0.01 0:43:32
 .         
 .         * reduce to main sample
 .         
@@ -150,10 +151,10 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364         364           0    *|
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.08 17:46:11
+r; t=0.11 0:43:32
 .         keep if e(sample)
 (4,586 observations deleted)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * bring in former_emp_count on board 
 .         
@@ -167,7 +168,7 @@ r; t=0.00 17:46:11
 
     Matched                             4,331  (_merge==3)
     -----------------------------------------
-r; t=0.02 17:46:11
+r; t=0.04 0:43:32
 .         mdesc SIZE INDEP former if _m == 1
 
     Variable    |     Missing          Total     Percent Missing
@@ -176,16 +177,16 @@ r; t=0.02 17:46:11
           INDEP |           6              6         100.00
    former_emp~n |           6              6         100.00
 ----------------+-----------------------------------------------
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         rename former former //shorter name 
-r; t=0.01 17:46:11
+r; t=0.00 0:43:32
 .         format former %9.3g  //display format, will end up as ylabel in graph 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 . 
 .         * turn R and t into a single variable (for collapse/separate/plotting)
 .         
 .         egen group = group(R t_Comm)
-r; t=0.00 17:46:11
+r; t=0.01 0:43:32
 .         tab group R
 
    group(R |        $ R_i $
@@ -197,7 +198,7 @@ r; t=0.00 17:46:11
          4 |         0        751 |       751 
 -----------+----------------------+----------
      Total |     2,797      1,540 |     4,337 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         tab group t_Comm
 
    group(R |      $ NC_{i} $
@@ -209,24 +210,24 @@ r; t=0.00 17:46:11
          4 |         0        751 |       751 
 -----------+----------------------+----------
      Total |     2,777      1,560 |     4,337 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         lab define groups 1 "NonReclass Comp" ///
 >                           2 "NonReclass NonComp" ///
 >                                           3 "Reclass        Comp"  ///
 >                                           4 "Reclass        NonComp", replace
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var group ""
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab values group groups
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .                 
 .         * when does the former employee ratio become different statistically?
 .         preserve 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .                 replace former = former/SIZE
 (1,569 real changes made)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .                 // via DD within NC: 2002->
 .                 reghdfe former i.fyear##(c.R) if t_Comm == 1, a(gvkey) vce(cluster gvkey)
 note: R is probably collinear with the fixed effects (all partialled-out values are close to zero; tol = 1.0e-09)
@@ -276,9 +277,9 @@ Absorbed degrees of freedom:
        gvkey |       199         199           0    *|
 -----------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.03 17:46:11
+r; t=0.05 0:43:32
 .         restore
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .                         
 .         * LASTYEAR not valid in 2006  (no 2007 gov data)
 .         foreach v in LASTYEAR_IND LASTYEAR_NOT {
@@ -286,38 +287,38 @@ r; t=0.00 17:46:11
   3.         }
 (511 real changes made, 511 to missing)
 (511 real changes made, 511 to missing)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         rename INDEP0 ISS_INDEP
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * create remaining variables: # on board now also on board next year
 .         
 .         bysort gvkey (fyear): g REMAIN__   = SIZE-LASTYEAR_IND-LASTYEAR_NOT
 (517 missing values generated)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         bysort gvkey (fyear): g REMAIN_IND = INDEP-LASTYEAR_IND
 (517 missing values generated)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         bysort gvkey (fyear): g REMAIN_NOT = NOT_INDEP-LASTYEAR_NOT
 (517 missing values generated)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         bysort gvkey (fyear): g NEW__      = HIRE_IND+HIRE_NOT
 (6 missing values generated)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * set up figs 
 .         
 .         local figs SIZE BOARD_IND ISS_INDEP  REMAIN__   REMAIN_IND REMAIN_NOT NEW__ HIRE_IND HIRE_NOT former
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * get yearly avgs (by group)
 .         
 .         collapse `figs' NOT_INDEP INDEP, by(fyear group)
-r; t=0.01 17:46:11
+r; t=0.01 0:43:32
 .         lab var fyear "Year"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * sep by group to distinct variables for plotting (eg. line SIZE1 SIZE2 SIZE3 SIZE4 fyear --> 4 lines)
 .         
@@ -422,7 +423,7 @@ INDEP1          float   %9.0g                 group == NonReclass Comp
 INDEP2          float   %9.0g                 group == NonReclass NonComp
 INDEP3          float   %9.0g                 group == Reclass Comp
 INDEP4          float   %9.0g                 group == Reclass NonComp
-r; t=0.01 17:46:11
+r; t=0.02 0:43:32
 .         
 .         * convert vars to percentage of (relevant) size
 .         forval k = 1/4 {
@@ -472,39 +473,39 @@ r; t=0.01 17:46:11
 (8 real changes made)
 (8 real changes made)
 (8 real changes made)
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .                 
 .         * these labels will be the titles of the subgraphs 
 .         lab var SIZE1       "(1) BoardSize"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var BOARD_IND1  "(2) Exchange Independence"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var ISS_INDEP1  "(3) ISS Independence"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var REMAIN__1   "(5) Retaining Dirs (All)"  
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var REMAIN_IND1 "(6) Retaining {it:I}"  
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var REMAIN_NOT1 "(7) Retaining {it:N}"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var NEW__1      "(8) Hiring Dirs (All)" 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var HIRE_IND1   "(9) Hiring {it:I}"  
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var HIRE_NOT1   "(10) Hiring {it:N}"  
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         lab var former1     "(4) Former Employees"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * use val labels for years, because '99 can't be used within xlabel() rules due to syntax parsing 
 .         label define year_lbl 1999 "'99" 2000 "'00" 2001 "'01" 2002 "'02" 2003 "'03" 2004 "'04" 2005 "'05" 2006 "'06"
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         label values fyear year_lbl
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         
 .         * do subgraphs
 .         local i = 1 
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 .         foreach v in `figs' {
   2.                 
 .                 // modify y options (scale, label, title)
@@ -652,10 +653,10 @@ delimiter now cr
 (note:  named style med not found in class linewidth, default attributes used)
 (note:  linewidth not found in scheme, default attributes used)
 (note:  named style red red black not found in class color, default attributes used)
-r; t=5.66 17:46:17
+r; t=10.51 0:43:43
 .         
 .         local figs SIZE BOARD_IND ISS_INDEP  former REMAIN__   REMAIN_IND REMAIN_NOT NEW__ HIRE_IND HIRE_NOT 
-r; t=0.00 17:46:17
+r; t=0.00 0:43:43
 .         grc1leg2 `figs', legendfrom(SIZE) noauto  name(all_groups2, replace) ///
 >                 xsize(6) ysize(7) col(3) holes(2 3) pos(12) ring(0) lxo(18) lyo(-5) ///
 >                 legscale(*.4)
@@ -750,21 +751,21 @@ r; t=0.00 17:46:17
 (note:  named style med not found in class linewidth, default attributes used)
 (note:  linewidth not found in scheme, default attributes used)
 (note:  named style red red black not found in class color, default attributes used)
-r; t=7.41 17:46:24
+r; t=7.84 0:43:51
 . 
 .         graph export "$output_folder/Fig_1_BoardStats.png" , replace
 (file outputs/Fig_1_BoardStats.png not found)
 file outputs/Fig_1_BoardStats.png saved as PNG format
-r; t=0.65 17:46:25
+r; t=0.66 0:43:51
 .         graph export "$output_folder/Fig_1_BoardStats.eps" , replace
 (file outputs/Fig_1_BoardStats.eps not found)
 file outputs/Fig_1_BoardStats.eps saved as EPS format
-r; t=0.02 17:46:25
+r; t=0.02 0:43:51
 .         
 .         clear   
-r; t=0.00 17:46:25
+r; t=0.01 0:43:51
 . }       
-r; t=14.16 17:46:25
+r; t=19.61 0:43:51
 
 . 
 . *************************************************************************
@@ -772,16 +773,16 @@ r; t=14.16 17:46:25
 . * controls are lagged, as in the main specification
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:25
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:43:51
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:25
+r; t=0.03 0:43:51
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -811,19 +812,19 @@ r; t=0.02 17:46:25
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:25
+r; t=0.00 0:43:51
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:25
+r; t=0.03 0:43:51
 .         
 .         eststo clear    
-r; t=0.00 17:46:25
+r; t=0.00 0:43:51
 .                 
 .         sort gvkey fyear
-r; t=0.00 17:46:25
+r; t=0.00 0:43:51
 . 
 .         /* REPORT SUM STATS FOR SAMPLE OF MAIN SPECIFICATION */
 .         
@@ -859,9 +860,9 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.50 17:46:25
+r; t=0.53 0:43:52
 .         g keep = e(sample) == 1 
-r; t=0.00 17:46:25
+r; t=0.00 0:43:52
 .         
 .         // before we drop to that sample, get the t-1 lagged X vars for the table 
 .         
@@ -876,11 +877,11 @@ r; t=0.00 17:46:25
 (1,256 missing values generated)
 (1,256 missing values generated)
 (1,256 missing values generated)
-r; t=0.01 17:46:25
+r; t=0.01 0:43:52
 .         
 .         keep if keep 
 (4,586 observations deleted)
-r; t=0.00 17:46:25
+r; t=0.00 0:43:52
 .         
 .         tabstat prof_a prof_sale   t_Comm R ///
 >                 LAG_* ///
@@ -901,7 +902,7 @@ LAG_BOARD_~D |      4286  .6972454  .1445241  .4285714  .7142857      .875
 LAG_incomi~c |      4286  .0899095  .1212157         0         0  .3333333
 LAG_outgoi~c |      4286  .0873802  .1223277         0         0  .3333333
 --------------------------------------------------------------------------
-r; t=0.02 17:46:26
+r; t=0.03 0:43:52
 .         tabstatmat C, nototal
 
 C[6,12]
@@ -920,9 +921,9 @@ Mean          .05895752          .03784676          8.1096594          .69724536
   p5          .00899553                  0                  5          .42857143                  0                  0
  p50          .04177649          .00407379                  8          .71428573                  0                  0
  p95          .17194183          .16073793                 12               .875          .33333334          .33333334
-r; t=0.00 17:46:26
+r; t=0.01 0:43:52
 .         mat C = C'
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         mat li C
 
 C[12,6]
@@ -939,29 +940,29 @@ C[12,6]
 LAG_BOARD_~D        4286   .69724536   .14452412   .42857143   .71428573        .875
 LAG_incomi~c        4286    .0899095   .12121575           0           0   .33333334
 LAG_outgoi~c        4286   .08738015   .12232773           0           0   .33333334
-r; t=0.01 17:46:26
+r; t=0.02 0:43:52
 .         putexcel set "$excel_filename", modify sheet("T2_raw", replace)
-r; t=0.04 17:46:26
+r; t=0.07 0:43:52
 .         putexcel A1 = matrix(C), names
 file outputs/AnalysisOutput.xlsx saved
-r; t=0.04 17:46:26
+r; t=0.04 0:43:52
 . }       
-r; t=0.66 17:46:26
+r; t=0.78 0:43:52
 
 . *************************************************************************
 . * Table 3: balance
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:26
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:43:52
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:26
+r; t=0.03 0:43:52
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -991,13 +992,13 @@ r; t=0.02 17:46:26
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:26
+r; t=0.01 0:43:52
 . 
 .         /* get obs from main sample */
 .         
@@ -1033,24 +1034,24 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 17:46:26
+r; t=0.07 0:43:52
 .         keep if e(sample) == 1 
 (4,586 observations deleted)
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .                 
 .         /* levels, non-compliant vs not */ 
 .         
 .         lab var incoming_frac  "IncomingTurn"
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         lab var outgoing_frac  "OutgoingTurn"
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         
 .         eststo clear
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         local myvarlist prof_a prof_sale l_a td_a  capx_a xrd_a      SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         rename option_awards_ option_awards_ // shorten var name 
-r; t=0.01 17:46:26
+r; t=0.04 0:43:52
 .                 
 .         foreach v in `myvarlist' {
   2.                 local lab: var lab `v'
@@ -1337,12 +1338,12 @@ Absorbed degrees of freedom:
         sic3 |       140           0         140     |
 -----------------------------------------------------+
 (est10 stored)
-r; t=0.20 17:46:26
+r; t=0.24 0:43:52
 . 
 .         /* average percent annual changes (changes from 1999-2002), non-compliant vs not */
 . 
 .         g t_Comm_perc = t_Comm // puts output in diff row (matters for formatting output)
-r; t=0.00 17:46:26
+r; t=0.00 0:43:52
 .         foreach v in `myvarlist' {
   2.                 local lab: var lab `v'
   3.                 di "`lab'"                                      
@@ -1682,7 +1683,7 @@ Absorbed degrees of freedom:
         sic3 |       108           0         108     |
 -----------------------------------------------------+
 (est20 stored)
-r; t=0.20 17:46:26
+r; t=0.23 0:43:53
 . 
 .         /* 2001 values, reclass vs. not */
 . 
@@ -1971,12 +1972,12 @@ Absorbed degrees of freedom:
         sic3 |       140           0         140     |
 -----------------------------------------------------+
 (est30 stored)
-r; t=0.19 17:46:26
+r; t=0.23 0:43:53
 .         
 .         /* average percent annual changes (changes from 1999-2002), treat vs. control */
 .         
 .         g R_perc = R // ensures new row for these reg coefs, which we just do to facilitate formatting tricks in excel 
-r; t=0.00 17:46:26
+r; t=0.00 0:43:53
 .         foreach v in `myvarlist' {
   2.                 local lab: var lab `v'
   3.                 di "`lab'"                      
@@ -2263,7 +2264,7 @@ Absorbed degrees of freedom:
         sic3 |       108           0         108     |
 -----------------------------------------------------+
 (est40 stored)
-r; t=0.20 17:46:26
+r; t=0.21 0:43:53
 .                                 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T3_raw") ///
@@ -2379,24 +2380,24 @@ yearFE
 {hline 936}
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.41 17:46:27
+r; t=0.56 0:43:54
 . }
-r; t=1.30 17:46:27
+r; t=1.61 0:43:54
 
 . *************************************************************************
 . * Table 4: main DDD
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.01 17:46:27
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:43:54
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:27
+r; t=0.02 0:43:54
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -2426,20 +2427,20 @@ r; t=0.02 17:46:27
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:27
+r; t=0.00 0:43:54
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:27
+r; t=0.01 0:43:54
 .         
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:46:27
+r; t=0.00 0:43:54
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.03 17:46:27
+r; t=0.04 0:43:54
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -2453,10 +2454,10 @@ r; t=0.03 17:46:27
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 17:46:27
+r; t=0.00 0:43:54
 .         
 .         eststo clear    
-r; t=0.03 17:46:27
+r; t=0.04 0:43:54
 .                 
 .         foreach v in prof_a prof_sale  {
   2.                 local lab: var lab `v'
@@ -2810,7 +2811,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.43 17:46:27
+r; t=0.51 0:43:54
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T4_raw") ///
@@ -2859,9 +2860,9 @@ MeanY                 0.14         0.14         0.14         0.14
 --------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.15 17:46:28
+r; t=0.17 0:43:54
 . }
-r; t=0.66 17:46:28
+r; t=0.79 0:43:54
 
 . ****************************************************************
 . * Fig 2: Plot baseline model TE by year
@@ -2869,8 +2870,8 @@ r; t=0.66 17:46:28
 .                 
 .         foreach v in prof_a prof_sale  {
   2.                 
-.                 use "$temp/fy_panel_nobandwidth", clear 
-  3.                 merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.                 use "$temp/fy_panel", clear 
+  3.                 merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
   4.                 define_DDD_vars -5 5 2003 
   5.                 xtset gvkey fyear
   6. 
@@ -3956,7 +3957,7 @@ Time variable: year, 1999 to 2006, but with a gap
 (note:  linewidth not found in scheme, default attributes used)
 (note:  named style med not found in class linewidth, default attributes used)
 (note:  linewidth not found in scheme, default attributes used)
-r; t=6.06 17:46:34
+r; t=6.73 0:44:01
 
 . 
 .         * make a combined graph and fine tune some things 
@@ -4010,71 +4011,71 @@ r; t=6.06 17:46:34
 (note:  linewidth not found in scheme, default attributes used)
 (note:  named style med not found in class linewidth, default attributes used)
 (note:  linewidth not found in scheme, default attributes used)
-r; t=2.75 17:46:36
+r; t=2.75 0:44:04
 
 .                 
 .         forval i=1/4{
   2.                 gr_edit .plotregion1.graph`i'.title.text = {}
   3.                 gr_edit .plotregion1.graph`i'.xaxis1.title.text = {}
   4.         }
-r; t=3.36 17:46:40
+r; t=3.24 0:44:07
 
 .         
 .         gr_edit .plotregion1.graph1.title.text.Arrpush "(1) ROA, no controls"
-r; t=0.43 17:46:40
+r; t=0.44 0:44:08
 
 .         gr_edit .plotregion1.graph2.title.text.Arrpush "(2) ROA, with controls"
-r; t=0.41 17:46:41
+r; t=0.46 0:44:08
 
 .         gr_edit .plotregion1.graph3.title.text.Arrpush "(3) Profit Margin, no controls"
-r; t=0.42 17:46:41
+r; t=0.44 0:44:09
 
 .         gr_edit .plotregion1.graph4.title.text.Arrpush "(4) Profit Margin, with controls"
-r; t=0.42 17:46:41
+r; t=0.46 0:44:09
 
 .         
 .         gr_edit .plotregion1.graph1.yaxis1.reset_rule -.02 .08 .02 , tickset(major) ruletype(range) 
-r; t=0.39 17:46:42
+r; t=0.40 0:44:09
 
 .         gr_edit .plotregion1.graph2.yaxis1.reset_rule -.02 .08 .02 , tickset(major) ruletype(range) 
-r; t=0.41 17:46:42
+r; t=0.39 0:44:10
 
 .         gr_edit .plotregion1.graph3.yaxis1.reset_rule -.05 .15 .05 , tickset(major) ruletype(range) 
-r; t=0.43 17:46:43
+r; t=0.39 0:44:10
 
 .         gr_edit .plotregion1.graph4.yaxis1.reset_rule -.05 .15 .05 , tickset(major) ruletype(range) 
-r; t=0.40 17:46:43
+r; t=0.39 0:44:11
 
 .                 
 .         graph export "$output_folder/Fig_2_DDD_all.png", replace
 (file outputs/Fig_2_DDD_all.png not found)
 file outputs/Fig_2_DDD_all.png saved as PNG format
-r; t=0.27 17:46:43
+r; t=0.26 0:44:11
 
 .         graph export "$output_folder/Fig_2_DDD_all.eps", replace
 (file outputs/Fig_2_DDD_all.eps not found)
 file outputs/Fig_2_DDD_all.eps saved as EPS format
-r; t=0.01 17:46:43
+r; t=0.02 0:44:11
 
 .         
 .         clear
-r; t=0.00 17:46:43
+r; t=0.00 0:44:11
 
 .         
 . *************************************************************************
 . * Table 5: DD by subsamples 
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:43
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:44:11
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:43
+r; t=0.03 0:44:11
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -4104,20 +4105,20 @@ r; t=0.02 17:46:43
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:43
+r; t=0.00 0:44:11
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:43
+r; t=0.01 0:44:11
 .         
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:46:43
+r; t=0.00 0:44:11
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.03 17:46:43
+r; t=0.03 0:44:11
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -4131,10 +4132,10 @@ r; t=0.03 17:46:43
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 17:46:43
+r; t=0.00 0:44:11
 .                         
 .         eststo clear    
-r; t=0.02 17:46:43
+r; t=0.02 0:44:11
 .         
 .         /* dd in reclassifier sample */
 .         
@@ -4335,7 +4336,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  807
-r; t=0.56 17:46:44
+r; t=0.59 0:44:12
 .                 
 .         /* dd in non-reclassifier sample */
 .         
@@ -4536,7 +4537,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  851
-r; t=0.11 17:46:44
+r; t=0.12 0:44:12
 .         
 .         /* dd in treatment/constrained sample */
 .                 
@@ -4737,7 +4738,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1658
-r; t=0.10 17:46:44
+r; t=0.11 0:44:12
 .                 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T5_raw") ///
@@ -4787,24 +4788,24 @@ MeanY                 0.14         0.15         0.14         0.14         0.14  
 ----------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.17 17:46:44
+r; t=0.22 0:44:12
 . }
-r; t=1.03 17:46:44
+r; t=1.12 0:44:12
 
 . *************************************************************************
 . * Table 6: falsification
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:44
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:44:12
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:44
+r; t=0.02 0:44:12
 .         define_DDD_vars -5 5 2001 // close = 1 if firm within 5 of cutoff in 2001, p=fyear>=2001
 
     (mean) |         close
@@ -4834,20 +4835,20 @@ r; t=0.02 17:46:44
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:44
+r; t=0.00 0:44:12
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.00 17:46:44
+r; t=0.01 0:44:12
 .                 
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:46:44
+r; t=0.00 0:44:12
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.03 17:46:44
+r; t=0.03 0:44:12
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -4861,10 +4862,10 @@ r; t=0.03 17:46:44
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 17:46:44
+r; t=0.00 0:44:12
 . 
 .         eststo clear    
-r; t=0.02 17:46:44
+r; t=0.02 0:44:12
 .                 
 .         foreach v in prof_a prof_sale  {
   2.                 local lab: var lab `v'
@@ -5218,7 +5219,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.41 17:46:45
+r; t=0.43 0:44:12
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T6_raw") ///
@@ -5267,28 +5268,28 @@ MeanY                 0.14         0.14         0.14         0.14
 --------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.15 17:46:45
+r; t=0.16 0:44:13
 .         
 .         clear 
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 . }
-r; t=0.64 17:46:45
+r; t=0.67 0:44:13
 
 .         
 . *************************************************************************
 . * Table 7: mechanism
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:45
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:44:13
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:45
+r; t=0.02 0:44:13
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -5318,13 +5319,13 @@ r; t=0.02 17:46:45
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:45
+r; t=0.01 0:44:13
 .                 
 .         reghdfe prof_a Rpt_Comm Rp pt_Comm  if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2)      
 >           
@@ -5358,16 +5359,16 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 17:46:45
+r; t=0.07 0:44:13
 .         g base_samp = e(sample)
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .                 
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.03 17:46:45
+r; t=0.03 0:44:13
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -5381,22 +5382,22 @@ r; t=0.03 17:46:45
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .         
 .         * panel A: profit margin decomp 
 .                 
 .         g xrd_sale2 = xrd_sale 
 (3,022 missing values generated)
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .         replace xrd_sale2 = 0 if missing(xrd_sale)
 (3,022 real changes made)
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .                 
 .         sort gvkey fyear
-r; t=0.00 17:46:45
+r; t=0.00 0:44:13
 .         
 .         eststo clear
-r; t=0.00 17:46:45
+r; t=0.01 0:44:13
 .         foreach v in cogs_sale sga_sale  xrd_sale2     {
   2.                 local lab: var lab `v'
   3.                 di "`lab'"
@@ -5701,7 +5702,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.36 17:46:45
+r; t=0.35 0:44:13
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T7a_decomp_raw") ///
@@ -5751,12 +5752,12 @@ MeanY                 0.60         0.27         0.07
 -------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.13 17:46:46
+r; t=0.16 0:44:13
 .                         
 .         * panel B: employee productivity
 .         
 .         eststo clear    
-r; t=0.00 17:46:46
+r; t=0.00 0:44:13
 .                 
 .         foreach v in prof_emp   sale_emp        life1   life2   life3   life4  sales_g  {
   2.                 local lab: var lab `v'
@@ -6446,7 +6447,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.84 17:46:46
+r; t=0.88 0:44:14
 .         
 .         esttab, ///
 >                 drop( ) star(* 0.10 ** 0.05 *** 0.01 ) b(3) compress replace nogaps  order(Rpt_Comm ) ///
@@ -6474,7 +6475,7 @@ MeanY                 0.05         0.31         0.24         0.40         0.29  
 -----------------------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.04 17:46:47
+r; t=0.05 0:44:14
 . 
 . 
 .         esttab_to_excel_sheet using "$excel_filename", ///
@@ -6525,12 +6526,12 @@ MeanY                 0.05         0.31         0.24         0.40         0.29  
 -----------------------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.18 17:46:47
+r; t=0.21 0:44:14
 .                                         
 .         * panel C: working cap mgmt - turnover
 .                 
 .         eststo clear    
-r; t=0.00 17:46:47
+r; t=0.00 0:44:14
 .                 
 .         foreach v in asset_turn fixed_asset_turn ar_turn invt_turn  ap_turn  ccc  {
   2.                 local lab: var lab `v'
@@ -7124,7 +7125,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1510
-r; t=0.75 17:46:47
+r; t=0.89 0:44:15
 .         
 .         esttab, ///
 >                 drop( ) star(* 0.10 ** 0.05 *** 0.01 ) b(3) compress replace nogaps  order(Rpt_Comm ) ///
@@ -7152,7 +7153,7 @@ MeanY                 1.14         8.93        15.55        14.16        12.21  
 ----------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.04 17:46:47
+r; t=0.06 0:44:15
 .                 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T7c_wcap_raw") ///
@@ -7202,24 +7203,25 @@ MeanY                 1.14         8.93        15.55        14.16        12.21  
 ----------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.17 17:46:48
+r; t=0.20 0:44:16
 . }               
-r; t=2.64 17:46:48
+r; t=2.94 0:44:16
 
 . *************************************************************************
 . * Table 8: CG07 style event study - Table IV, Panel C: FF4 alphas 
 . *************************************************************************
-. {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:46:48
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+. if $using_fake_data == 0 {
+.         
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:44:16
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:46:48
+r; t=0.02 0:44:16
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -7249,16 +7251,16 @@ r; t=0.02 17:46:48
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:48
+r; t=0.01 0:44:16
 .         
 .         eststo clear    
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         
 .         * reduce to main sample
 .         
@@ -7294,13 +7296,13 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 17:46:48
+r; t=0.09 0:44:16
 .         keep if e(sample)
 (4,586 observations deleted)
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         
 .         keep lpermno R t_Comm
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         mdesc
 
     Variable    |     Missing          Total     Percent Missing
@@ -7309,38 +7311,38 @@ r; t=0.00 17:46:48
               R |           0          4,337           0.00
          t_Comm |           0          4,337           0.00
 ----------------+-----------------------------------------------
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         duplicates drop lpermno, force
 
 Duplicates in terms of lpermno
 
 (3,769 observations deleted)
-r; t=0.00 17:46:48
+r; t=0.01 0:44:16
 .         distinct *, j
 
         Observations
       total   distinct
         568        568
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         
 .         rename lpermno permno 
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         tempfile firm_classif
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         save `firm_classif'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000i.tmp saved as .dta format
-r; t=0.00 17:46:48
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000i.tmp saved as .dta format
+r; t=0.00 0:44:16
 .         
 .         * permnos for CRSP!
 .         * to download returns from crsp, need a list of permnos
 .                 
 .         qui flevelsof permno, local(myvars) // faster than levelsof
-r; t=0.02 17:46:48
+r; t=0.03 0:44:16
 .         local myvars : subinstr local myvars " " ",", all 
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         di length("`myvars'")
 3407
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .         
 .         * obdc crsp for these permnos 
 .         
@@ -7350,22 +7352,22 @@ r; t=0.00 17:46:48
         |      total   distinct
 --------+----------------------
  permno |        568        568
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .                 local n_firms = `r(ndistinct)' // for post-check
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 . 
 .                 * download daily returns + this also grabs delisting codes (irrelevant here due to sample construction)
 . 
 .                 clear
-r; t=0.00 17:46:48
+r; t=0.00 0:44:16
 .                                 
 .                 odbc load, exec("SELECT a.permno, a.date, a.ret, a.prc, a.shrout, c.dlret, c.dlstcd FROM crsp.dsf a LEFT JOIN crsp.dse
 >  c ON a.permno = c.permno AND a.date = c.date where a.permno IN ( `myvars' ) AND a.date BETWEEN '2001-11-01' AND '2002-10-31'")  dsn("
 > wrds-pgdata-64")
-r; t=34.52 17:47:22
+r; t=14.27 0:44:30
 .                 
 .                 sort permno date
-r; t=0.00 17:47:22
+r; t=0.02 0:44:30
 . 
 .                 distinct permno
 
@@ -7373,20 +7375,20 @@ r; t=0.00 17:47:22
         |      total   distinct
 --------+----------------------
  permno |     143208        563
-r; t=0.02 17:47:22
+r; t=0.01 0:44:30
 .                 di "We have return data on " `n_firms' "/" `r(ndistinct)' " firms"
 We have return data on 568/563 firms
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 
 .                 replace ret = ret+dlret if !missing(dlret)
 (0 real changes made)
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 replace ret = ret - .3 if missing(dlret) & !missing(dlstcd)      // Shumway (1997)
 (0 real changes made)
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 drop if missing(ret) 
 (1 observation deleted)
-r; t=0.00 17:47:22
+r; t=0.01 0:44:30
 .                                 
 .         * merge back in firm groupings
 .         
@@ -7401,13 +7403,13 @@ r; t=0.00 17:47:22
 
     Matched                           143,207  (_merge==3)
     -----------------------------------------
-r; t=0.03 17:47:22
+r; t=0.05 0:44:30
 .         
 .         * compute mktcap (for value weighting)
 .         
 .         g mktcap = abs(prc)*shrout*1000
 (5 missing values generated)
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         sum mktcap prc shrout
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -7415,7 +7417,7 @@ r; t=0.00 17:47:22
       mktcap |    143,207    4.44e+09    1.98e+10    7175000   3.77e+11
          prc |    143,207    25.75249    17.39825     -63.25     149.49
       shrout |    143,207    158189.3    541533.3       1025    6712000
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         
 .         * collapse to daily portfolios
 .         * e.g.: 
@@ -7439,18 +7441,18 @@ r; t=0.00 17:47:22
   7.                         }
   8.                 }
   9.         }
-r; t=0.02 17:47:22
+r; t=0.02 0:44:30
 .         
 .         * which we collapse to daily portfolio returns (here the VWs)
 .         preserve 
-r; t=0.00 17:47:22
+r; t=0.01 0:44:30
 .                 collapse ret_VW_* [fw=mktcap], by(date)
-r; t=0.04 17:47:22
+r; t=0.05 0:44:30
 .                 tempfile VWs 
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 save `VWs'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000k.tmp saved as .dta format
-r; t=0.00 17:47:22
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000k.tmp saved as .dta format
+r; t=0.00 0:44:30
 .                 sum
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -7465,13 +7467,13 @@ ret_VW_r0_t1 |        252    .0005777    .0166098  -.0372292   .0559846
 ret_VW_r1_t0 |        252    .0002886    .0199454  -.0458997   .0661112
    ret_VW_r1 |        252    .0001209    .0183611  -.0378206    .063519
 ret_VW_r1_t1 |        252   -.0002216    .0172979  -.0399371   .0588222
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         restore
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         
 .         * collapse to daily portfolio returns for the EW
 .         collapse ret_EW_* , by(date)
-r; t=0.03 17:47:22
+r; t=0.03 0:44:30
 .         
 .         merge 1:1 date using `VWs' // merge in the VWs 
 
@@ -7483,25 +7485,25 @@ r; t=0.03 17:47:22
 
     Matched                               252  (_merge==3)
     -----------------------------------------
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         drop _m 
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .         
 .         * merge in FF4 factors 
 .         
 .         preserve
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 clear
-r; t=0.00 17:47:22
+r; t=0.00 0:44:30
 .                 odbc load, exec("SELECT * FROM ff.factors_daily")  dsn("wrds-pgdata-64")
-r; t=22.73 17:47:45
+r; t=28.95 0:44:59
 .                 tempfile FF
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .                 save `FF'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000m.tmp saved as .dta format
-r; t=0.00 17:47:45
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000m.tmp saved as .dta format
+r; t=0.00 0:44:59
 .         restore
-r; t=0.00 17:47:45
+r; t=0.01 0:44:59
 .                 
 .         merge 1:1 date using `FF', keep(1 3)
 
@@ -7513,9 +7515,9 @@ r; t=0.00 17:47:45
 
     Matched                               252  (_merge==3)
     -----------------------------------------
-r; t=0.02 17:47:45
+r; t=0.03 0:44:59
 .         drop _m 
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         
 .         * in regs, LHS is ret - rf
 .         
@@ -7538,7 +7540,7 @@ r; t=0.00 17:47:45
 (252 real changes made)
 (252 real changes made)
 (252 real changes made)
-r; t=0.00 17:47:45
+r; t=0.01 0:44:59
 .         sum ret_?W* rf
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -7563,18 +7565,18 @@ ret_VW_r1_t0 |        252    .0002203    .0199456  -.0459697   .0660412
 -------------+---------------------------------------------------------
 ret_VW_r1_t1 |        252   -.0002898    .0172978  -.0400071   .0587522
           rf |        252    .0000683    5.59e-06     .00006     .00008
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 . 
 .         * do some tidying 
 .         
 .         g mofd = mofd(date)
 (1 missing value generated)
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         format mofd %tm 
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         drop if missing(date)
 (1 observation deleted)
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 . 
 .         * create the long-short ports, and the double sort port
 . 
@@ -7590,24 +7592,24 @@ r; t=0.00 17:47:45
   6.                 g ret_`W'W`r'_t1mt0 = ret_`W'W`r'_t1 - ret_`W'W`r'_t0
   7.                 }
   8.         }
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 . 
 .         * get ready for portfolio tests 
 .         
 .         g t = _n // tsset without gaps, for newey
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         tsset t
 
 Time variable: t, 1 to 252
         Delta: 1 unit
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         local nw_lags 4
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         
 .         * run the tests and save the alphas (formatting the table nicely happens in excel)
 .         
 .         eststo clear
-r; t=0.00 17:47:45
+r; t=0.00 0:44:59
 .         foreach W in E V {
   2.         foreach t in _t1 _t0 _t1mt0 {
   3.         foreach r in "" _r1 _r0 _r1mr0 {
@@ -8243,7 +8245,7 @@ added macro:
 
 added macro:
                   e(r) : "_r1mr0"
-r; t=0.87 17:47:46
+r; t=1.09 0:45:00
 . 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T8_raw") ///
@@ -8312,55 +8314,57 @@ r_group                             _r1          _r0       _r1mr0               
 {hline 328}
 Standard errors in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=3.82 17:47:50
+r; t=0.34 0:45:01
 . }       
-r; t=62.28 17:47:50
+r; t=45.12 0:45:01
 
 . ****************************************************************
 . * Table 9: R/NR director comparisons (Dir_traits_raw)
 . * Table 10: in/out director comparisons (Dir_turnover_tComm_raw)
 . ****************************************************************        
-. {
+. 
+. if $using_fake_data == 0 {
+.         
 . *** get common shares as of 10k to fill in missing votecref (ISS stopped collecting after 2003)
 . 
 .         use gvkey lpermno datadate cusip fyear csho if fyear > 1993 using "$ccm_raw", clear
-r; t=0.49 17:47:50
+r; t=0.54 0:45:01
 .         destring gvkey, replace
 gvkey: all characters numeric; replaced as long
-r; t=0.14 17:47:51
+r; t=0.15 0:45:01
 .         duplicates drop gvkey fyear datadate, force // if the fye date is the same, doesn't matter which we keep
 
 Duplicates in terms of gvkey fyear datadate
 
 (1,315 observations deleted)
-r; t=0.08 17:47:51
+r; t=0.12 0:45:02
 .         keep gvkey fyear csho
-r; t=0.00 17:47:51
+r; t=0.00 0:45:02
 .         distinct g f, j 
 
         Observations
       total   distinct
      125949     125949
-r; t=0.01 17:47:51
+r; t=0.02 0:45:02
 .         tempfile csho
-r; t=0.00 17:47:51
+r; t=0.00 0:45:02
 .         save `csho', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000n.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000n.tmp saved as .dta format
-r; t=0.00 17:47:51
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000n.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000n.tmp saved as .dta format
+r; t=0.00 0:45:02
 .         
 . *** get list of sample firms - we just want turnover info at these firm, along with R and t_Comm 
 . 
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:47:51
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:45:02
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:47:51
+r; t=0.03 0:45:02
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -8390,13 +8394,13 @@ r; t=0.02 17:47:51
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:47:51
+r; t=0.00 0:45:02
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:47:51
+r; t=0.01 0:45:02
 .                 
 .         reghdfe         prof_a Rpt_Comm Rp pt_Comm  if  close, cluster(gvkey)  absorb(gvkey fyear)                              
 (dropped 1 singleton observations)
@@ -8429,32 +8433,32 @@ Absorbed degrees of freedom:
        fyear |        10           0          10     |
 -----------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 17:47:51
+r; t=0.13 0:45:02
 .         keep if e(sample) 
 (3,509 observations deleted)
-r; t=0.00 17:47:51
+r; t=0.00 0:45:02
 .         
 .         collapse (max) R t_Comm (firstnm) cusip6 , by(gvkey)    
-r; t=0.67 17:47:51
+r; t=0.01 0:45:02
 .         tempfile sample_firm_R_t
-r; t=0.00 17:47:51
+r; t=0.00 0:45:02
 .         save `sample_firm_R_t'  
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000o.tmp saved as .dta format
-r; t=0.00 17:47:51
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000o.tmp saved as .dta format
+r; t=0.00 0:45:02
 .         
 . *** pre-compute some vars of interest at dir_firm_id / fyear level
 . 
 .         use "$dir_lvl_out", clear       
-r; t=0.11 17:47:52
+r; t=0.13 0:45:02
 .         collapse (min) dirsince, by(dir_id)
-r; t=0.09 17:47:52
+r; t=0.12 0:45:02
 .         rename dirsince dir_firstYearOnABoard 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         tempfile dir_firstYearOnABoard
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         save `dir_firstYearOnABoard'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000p.tmp saved as .dta format
-r; t=0.00 17:47:52
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000p.tmp saved as .dta format
+r; t=0.00 0:45:02
 .         
 . *** load director file, tag directors as incoming and/or outgoing
 .         
@@ -8462,19 +8466,19 @@ r; t=0.00 17:47:52
 .         import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.01 17:47:52
+r; t=0.01 0:45:02
 .         rename cusip6_irrc cusip6 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         tempfile ccm_cusip6_lookup
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         save `ccm_cusip6_lookup', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000q.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000q.tmp saved as .dta format
-r; t=0.00 17:47:52
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000q.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000q.tmp saved as .dta format
+r; t=0.00 0:45:02
 .         
 .         * load director level, update cusip6 to match CCM'R 6 digit cusip 
 .         use "$dir_lvl_out", clear
-r; t=0.08 17:47:52
+r; t=0.08 0:45:02
 .         merge m:1 cusip6 using `ccm_cusip6_lookup'
 
     Result                      Number of obs
@@ -8485,12 +8489,12 @@ r; t=0.08 17:47:52
 
     Matched                             2,417  (_merge==3)
     -----------------------------------------
-r; t=0.07 17:47:52
+r; t=0.12 0:45:02
 .         replace cusip6 = cusip6_ccm if _m == 3 & !missing(cusip6_ccm)
 (2,417 real changes made)
-r; t=0.01 17:47:52
+r; t=0.01 0:45:02
 .         drop cusip6_ccm _m 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         
 .         * add R, t, dir_firstYearOnABoard
 .         merge m:1 cusip6 using `sample_firm_R_t', keep(3) nogen 
@@ -8500,7 +8504,7 @@ r; t=0.00 17:47:52
     Not matched                             0
     Matched                            45,210  
     -----------------------------------------
-r; t=0.14 17:47:52
+r; t=0.18 0:45:02
 .         merge m:1 dir_id using `dir_firstYearOnABoard', keep(1 3) nogen
 
     Result                      Number of obs
@@ -8508,44 +8512,44 @@ r; t=0.14 17:47:52
     Not matched                             0
     Matched                            45,210  
     -----------------------------------------
-r; t=0.01 17:47:52
+r; t=0.01 0:45:02
 .         
 .         g YrBoardExperience = fyear - dir_firstYearOnABoard
 (806 missing values generated)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         
 .         lab var YrBoardExperience "Director experience"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 . 
 .         * tag incoming/outgoing
 .         
 .         egen firm_first_year = min(fyear), by(gvkey)
-r; t=0.02 17:47:52
+r; t=0.02 0:45:02
 .         egen firm_last_year = max(fyear), by(gvkey)
-r; t=0.03 17:47:52
+r; t=0.03 0:45:02
 .         
 .         drop dir_firm_id // some missing vals, reconstitute it
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         egen dir_firm_id = group(dir_id cusip6)
-r; t=0.03 17:47:52
+r; t=0.03 0:45:02
 .         
 .         bysort dir_firm_id (fyear): g incoming = _n == 1                                & fyear > firm_first_year
-r; t=0.01 17:47:52
+r; t=0.01 0:45:02
 .         bysort dir_firm_id (fyear): g outgoing = _n == _N                               & fyear < firm_last_year    // CANT BE OUTGOIN
 > G IN 2006 - no 2007 data 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .         bysort dir_firm_id (fyear): g remaining = _n > 1 & _n < _N
-r; t=0.00 17:47:52
+r; t=0.00 0:45:02
 .                         
 .         drop if fyear < 1999
 (9,231 observations deleted)
-r; t=0.01 17:47:52
+r; t=0.01 0:45:03
 .                 
 .         * define dir_share_pct 
 .         
 .         g dir_share_pct = 100*num_of_shares/votecref
 (15,508 missing values generated)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         
 .         merge m:1 gvkey fyear using `csho', keep(1 3) nogen keepusing(csho)     
 
@@ -8557,35 +8561,35 @@ r; t=0.00 17:47:52
 
     Matched                            35,938  
     -----------------------------------------
-r; t=0.05 17:47:52
+r; t=0.07 0:45:03
 .         pwcorr votecref csho // very similar 
 
              | votecref     csho
 -------------+------------------
     votecref |   1.0000 
         csho |   0.9674   1.0000 
-r; t=0.01 17:47:52
+r; t=0.02 0:45:03
 .         sum votecref csho if !missing(votecref) // need to scale the same
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     votecref |     20,471    1.84e+08    6.06e+08    1669664   1.08e+10
         csho |     20,439     189.727    632.3869      6.818      10771
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         replace csho = csho * 1000000
 (35,931 real changes made)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         sum votecref csho if !missing(votecref) 
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
     votecref |     20,471    1.84e+08    6.06e+08    1669664   1.08e+10
         csho |     20,439    1.90e+08    6.32e+08    6818000   1.08e+10
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         
 .         replace dir_share_pct = 100*num_of_shares/csho if missing(votecref)
 (12,610 real changes made)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         sum dir_share_pct, d
 
                         dir_share_pct
@@ -8602,62 +8606,62 @@ r; t=0.00 17:47:52
 90%     3.000521       121.0452       Variance       31.74948
 95%     7.838675       244.1407       Skewness       15.27054
 99%     26.34221       353.6511       Kurtosis       621.5468
-r; t=0.00 17:47:52
+r; t=0.01 0:45:03
 .         replace dir_share_pct = . if dir_share_pct > `r(p99)'
 (331 real changes made, 331 to missing)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 . 
 .         * define other table variables 
 .         
 .         g tenure_length = fyear - dirsince              
 (2,333 missing values generated)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         
 .         lab var dir_share_pct                "Fraction of firm shares held"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var outside_public_boards        "Num. of outside board positions"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var attend_less75_pct            "Low attendance"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var audit_membership             "Audit committee"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var comp_membership              "Compensation committee"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var gov_comm_mem                 "Governance committee"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var nom_membership               "Nominating committee"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var indep_dirman                 "Independent"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var tenure_length                "Directorship tenure"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .                                 
 .         g neg_t_Comm = -t_Comm // just flips the difference on the last test 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         g neg_R = -R           // just flips the difference on the last test 
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 . 
 .         g any_committee = audit_membership + comp_membership + gov_comm_mem + nom_membership
 (2,790 missing values generated)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         replace any_committee = (any_committee>0) if !missing(any_committee)
 (13,047 real changes made)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         lab var any_committee                "On any of A/C/G/N committees"
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .                 
 .         // make table
 .         // could be done also with      "balancetable" command
 .                 
 .         local tabvars indep_dirman dir_share_pct former_employee_yn any_committee audit_membership  comp_membership gov_comm_mem nom_m
 > embership tenure_length outside_public_boards attend_less75_pct  
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         
 .         local subsample t_Comm == 1 & inrange(fyear, 2003,2006)
-r; t=0.00 17:47:52
+r; t=0.00 0:45:03
 .         
 .         eststo clear
-r; t=0.03 17:47:52
+r; t=0.03 0:45:03
 .         foreach condition in incoming outgoing {        
   2.                 estpost ttest `tabvars' if (`condition') & (`subsample'), by(neg_R) unequal
   3.                 eststo `condition'
@@ -8718,7 +8722,7 @@ nom_member~p |  .3292181
 tenure_len~h |  9.625514 
 outside_pu~s |  .6090535 
 attend_les~t |  .0205761 
-r; t=0.16 17:47:52
+r; t=0.24 0:45:03
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T10_raw") ///
@@ -8750,37 +8754,37 @@ Low attendance               0.01         0.01         0.01            0.04     
 off                                                                                                     
 --------------------------------------------------------------------------------------------------------
 Means and difference of means reported for each subsample of directors, unequal var t-test
-r; t=0.21 17:47:53
+r; t=0.26 0:45:03
 . 
 .         *** tag reclass dir across all of their obs 
 . 
 .         g temp = switchto_Indman if inrange(fyear,2002,2006)
 (15,727 missing values generated)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         egen is_reclassifying_dir = max(temp)   , by(gvkey dir_id) // only =1 in the year of reclass for reclass in 2002-2006
 (3,056 missing values generated)
-r; t=0.02 17:47:53
+r; t=0.02 0:45:03
 .         replace is_r = 0 if missing(is_re) 
 (3,056 real changes made)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         drop temp
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         
 .         *** compare directors in the year they reclass to 
 .                 
 .         g neg_is_reclassifying_dir = - is_reclassifying_dir // just flips the difference on the last test 
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         g neg_switchto_Indman = -switchto_Indman
 (3,741 missing values generated)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         
 .         local tabvars indep_dirman dir_share_pct former_employee_yn any_committee audit_membership  comp_membership gov_comm_mem nom_m
 > embership tenure_length outside_public_boards attend_less75_pct  
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         local subsample inrange(fyear,1999,2006)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         eststo clear
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         tabstat  `tabvars'      if (`subsample') , by(switchto_Indman) c(s) s(n mean)
 
 Summary for variables: indep_dirman dir_share_pct former_employee_yn any_committee audit_membership comp_membership gov_comm_mem nom_mem
@@ -8825,7 +8829,7 @@ switchto_Indman |         N      Mean
                 |     30370  .7405993
                 |     29795  .0181574
 -------------------------------------
-r; t=0.04 17:47:53
+r; t=0.05 0:45:03
 .         // compare reclass vs never-reclass
 .         estpost ttest `tabvars' if (`subsample') & ((switchto_Indman==1) | (!is_reclassifying_dir)),                     by(neg_switch
 > to_Indman) unequal
@@ -8857,10 +8861,10 @@ nom_member~p |  .3065221
 tenure_len~h |   9.93127 
 outside_pu~s |  .7387814 
 attend_les~t |  .0182772 
-r; t=0.09 17:47:53
+r; t=0.11 0:45:03
 .         eststo 
 (est1 stored)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         // compare reclass vs "never-reclass non-indep"
 .         estpost ttest `tabvars' if (`subsample') & ((switchto_Indman==1) | (!is_reclassifying_dir & indep_dirman == 0)), by(neg_switch
 > to_Indman) unequal
@@ -8892,10 +8896,10 @@ nom_member~p |  .0711403
 tenure_len~h |  13.05789 
 outside_pu~s |  .4055735 
 attend_les~t |  .0082435 
-r; t=0.08 17:47:53
+r; t=0.10 0:45:03
 .         eststo 
 (est2 stored)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:03
 .         // compare reclass vs "never-reclass indep"
 .         estpost ttest `tabvars' if (`subsample') & ((switchto_Indman==1) | (!is_reclassifying_dir & indep_dirman == 1)), by(neg_switch
 > to_Indman) unequal
@@ -8927,10 +8931,10 @@ nom_member~p |  .3988717
 tenure_len~h |  8.704299 
 outside_pu~s |  .8695206 
 attend_les~t |  .0222079 
-r; t=0.09 17:47:53
+r; t=0.11 0:45:04
 .         eststo 
 (est3 stored)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         esttab, cells("mu_1(label(R=1) fmt(2)) mu_2(label(R=0) fmt(2)) b(label(Diff) star)") star(* 0.1 ** 0.05 *** 0.01)  mgroups("Rv
 > sAll" "RvsNotIndep" "RvsIndep", pattern(1 1 1))   nonumber stats(off)     title("Director Characteristics at Non-Compliant Firms") not
 > e("Means and difference of means reported for each subsample of directors, unequal var t-test")     label
@@ -8975,7 +8979,7 @@ off
 ----------------------------------------------------------------------------------------------------------------------------------------
 > ----------
 Means and difference of means reported for each subsample of directors, unequal var t-test
-r; t=0.03 17:47:53
+r; t=0.06 0:45:04
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T9_raw") ///
@@ -9024,7 +9028,7 @@ off
 ----------------------------------------------------------------------------------------------------------------------------------------
 > ----------
 Means and difference of means reported for each subsample of directors, unequal var t-test
-r; t=0.21 17:47:53
+r; t=0.25 0:45:04
 .         
 . *** What fraction of of Reclassifying NC firms have a reclass director on a key 
 . *** committee post mandate? (60/96 = 63%)
@@ -9032,19 +9036,19 @@ r; t=0.21 17:47:53
 .         * is this a reclassifying director?
 .         
 .         cap drop temp 
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         g temp =switchto_Indman if inrange(fyear,2002,2006)     
 (15,727 missing values generated)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         egen R_director = max(temp)     , by(cusip6 dir_id)
 (3,056 missing values generated)
-r; t=0.02 17:47:53
+r; t=0.02 0:45:04
 .         bysort cusip6 dir_id  (fyear): g has_switched = sum(temp) // equals 1
-r; t=0.01 17:47:53
+r; t=0.01 0:45:04
 .         replace has_switched = (has_switched>0) if !missing(has_switched) // a few directors have stint as non-indep due to consulting
 > , etc
 (14 real changes made)
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .                                 
 .         * how many R & NC firms do we have?
 .         distinct cusip if       fyear > 2002 ///
@@ -9054,9 +9058,9 @@ r; t=0.00 17:47:53
         |      total   distinct
 --------+----------------------
  cusip6 |       3619         96
-r; t=0.03 17:47:53
+r; t=0.03 0:45:04
 .         local n_RNC `r(ndistinct)'
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         
 .         * how many of those have a director on a committee who has reclassed?
 .         distinct cusip if       fyear > 2002 ///
@@ -9069,50 +9073,52 @@ r; t=0.00 17:47:53
         |      total   distinct
 --------+----------------------
  cusip6 |        172         60
-r; t=0.03 17:47:53
+r; t=0.03 0:45:04
 .         local n_RNC_with_Rdir_on_comm `r(ndistinct)'                    
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         
 .         di `n_RNC_with_Rdir_on_comm'/`n_RNC' // 62.5%
 .625
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 . }       
-r; t=3.27 17:47:53
+r; t=3.21 0:45:04
 
 . 
 . ****************************************************************
 . * Table 11: Board stats at non-compliant firms
 . ****************************************************************
-. {       
+. 
+. if $using_fake_data == 0 {
+.                 
 .         * get board level tenure and former employment 
 .         
 .         use "$dir_lvl_out", clear
-r; t=0.10 17:47:53
+r; t=0.13 0:45:04
 .         g tenure_length = fyear - dirsince              
 (34,112 missing values generated)
-r; t=0.01 17:47:53
+r; t=0.01 0:45:04
 .         collapse tenure_length (sum) former_employee_yn, by(cusip6 fyear)
-r; t=0.09 17:47:53
+r; t=0.15 0:45:04
 .         
 .         tempfile boardlvl_tenure_employment
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         save `boardlvl_tenure_employment', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000r.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000r.tmp saved as .dta format
-r; t=0.00 17:47:53
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000r.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000r.tmp saved as .dta format
+r; t=0.00 0:45:04
 .         
 .         * now load our firm year panel
 .         
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:47:53
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:45:04
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:47:53
+r; t=0.03 0:45:04
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -9142,13 +9148,13 @@ r; t=0.02 17:47:53
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:47:53
+r; t=0.01 0:45:04
 .         
 .         merge 1:1 cusip6 fyear using `boardlvl_tenure_employment', keep(1 3) nogen
 
@@ -9160,12 +9166,12 @@ r; t=0.01 17:47:53
 
     Matched                             8,336  
     -----------------------------------------
-r; t=0.00 17:47:53
+r; t=0.01 0:45:04
 .         
 .         * keep all obs of the firms in our main test 
 .         
 .         sort gvkey fyear        
-r; t=0.00 17:47:53
+r; t=0.00 0:45:04
 .         reghdfe         prof_a Rpt_Comm Rp pt_Comm  if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic
 > 2)                
 (dropped 50 singleton observations)
@@ -9198,33 +9204,33 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 17:47:54
+r; t=0.09 0:45:04
 .         g sample = e(sample)    
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         egen ever_in_samp = max(sample), by(gvkey)      
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         keep if ever_in_samp
 (3,558 observations deleted)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         
 .         * ad hoc fix needed only for this table 
 . 
 .         replace NONRETURN_NOT = 1 if fyear == 2001 & gvkey == 63422
 (1 real change made)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .                 
 .         * set up and tabulate   
 .                 
 .         g new_board_members = HIRE_IND + HIRE_NOT 
 (194 missing values generated)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         g departed_board    = NONRETURN_IND + NONRETURN_NOT
 (501 missing values generated)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 . 
 .         keep if fyear >= 1999 & fyear <= 2006
 (1,018 observations deleted)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         
 .         separate new_board_members, by(fyear) g(New_)
 
@@ -9239,7 +9245,7 @@ New_2003        byte    %9.0g                 new_board_members, fyear == 2003
 New_2004        byte    %9.0g                 new_board_members, fyear == 2004
 New_2005        byte    %9.0g                 new_board_members, fyear == 2005
 New_2006        byte    %9.0g                 new_board_members, fyear == 2006
-r; t=0.01 17:47:54
+r; t=0.01 0:45:04
 .         separate new_board_members, by(p) g(New_)
 
 Variable      Storage   Display    Value
@@ -9247,7 +9253,7 @@ Variable      Storage   Display    Value
 ----------------------------------------------------------------------------------------------------------------------------------------
 New_0           byte    %9.0g                 new_board_members, p == 0
 New_1           byte    %9.0g                 new_board_members, p == 1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         separate departed_board,    by(fyear) g(gone_)
 
 Variable      Storage   Display    Value
@@ -9261,7 +9267,7 @@ gone_2003       byte    %9.0g                 departed_board, fyear == 2003
 gone_2004       byte    %9.0g                 departed_board, fyear == 2004
 gone_2005       byte    %9.0g                 departed_board, fyear == 2005
 gone_2006       byte    %9.0g                 departed_board, fyear == 2006
-r; t=0.00 17:47:54
+r; t=0.01 0:45:04
 .         separate departed_board,    by(p) g(gone_)
 
 Variable      Storage   Display    Value
@@ -9269,7 +9275,7 @@ Variable      Storage   Display    Value
 ----------------------------------------------------------------------------------------------------------------------------------------
 gone_0          byte    %9.0g                 departed_board, p == 0
 gone_1          byte    %9.0g                 departed_board, p == 1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         separate tenure_length, by(fyear) g(TENURE_)
 
 Variable      Storage   Display    Value
@@ -9283,7 +9289,7 @@ TENURE_2003     float   %9.0g                 tenure_length, fyear == 2003
 TENURE_2004     float   %9.0g                 tenure_length, fyear == 2004
 TENURE_2005     float   %9.0g                 tenure_length, fyear == 2005
 TENURE_2006     float   %9.0g                 tenure_length, fyear == 2006
-r; t=0.00 17:47:54
+r; t=0.01 0:45:04
 .         separate tenure_length, by(p) g(TENURE_)
 
 Variable      Storage   Display    Value
@@ -9291,7 +9297,7 @@ Variable      Storage   Display    Value
 ----------------------------------------------------------------------------------------------------------------------------------------
 TENURE_0        float   %9.0g                 tenure_length, p == 0
 TENURE_1        float   %9.0g                 tenure_length, p == 1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         separate former_employee_yn, by(fyear) g(EMPLOY_)
 
 Variable      Storage   Display    Value
@@ -9305,7 +9311,7 @@ EMPLOY_2003     byte    %1.0f                 former_employee_yn, fyear == 2003
 EMPLOY_2004     byte    %1.0f                 former_employee_yn, fyear == 2004
 EMPLOY_2005     byte    %1.0f                 former_employee_yn, fyear == 2005
 EMPLOY_2006     byte    %1.0f                 former_employee_yn, fyear == 2006
-r; t=0.01 17:47:54
+r; t=0.01 0:45:04
 .         separate former_employee_yn, by(p) g(EMPLOY_)
 
 Variable      Storage   Display    Value
@@ -9313,10 +9319,10 @@ Variable      Storage   Display    Value
 ----------------------------------------------------------------------------------------------------------------------------------------
 EMPLOY_0        byte    %1.0f                 former_employee_yn, p == 0
 EMPLOY_1        byte    %1.0f                 former_employee_yn, p == 1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         
 .         unab tabvars : New_* gone_* TENURE_* EMPLOY_*
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         summarize `tabvars' if R == 0 // does it work, yes
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -9368,15 +9374,15 @@ r; t=0.00 17:47:54
  EMPLOY_2006 |        321    .2211838    .4720168          0          3
     EMPLOY_0 |      1,368    .4144737     .663608          0          4
     EMPLOY_1 |      1,357    .2675018    .5348454          0          3
-r; t=0.01 17:47:54
+r; t=0.01 0:45:04
 .         
 .         cap g negR = -R // (just to make difference value be Reclass-NR)
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 . 
 .         * output for tables
 .         
 .         eststo clear    
-r; t=0.00 17:47:54
+r; t=0.00 0:45:04
 .         
 .         foreach v in New_ gone_ TENURE_ EMPLOY_ {
   2.         eststo ,    title("R"):                  estpost summarize `v'* if R == 1 & t_Comm == 1
@@ -9604,11 +9610,11 @@ r; t=0.00 17:47:54
     EMPLOY_0 |  .4937656 
     EMPLOY_1 |  .2849873 
 (est12 stored)
-r; t=0.19 17:47:54
+r; t=0.22 0:45:05
 .                 
 .         * a gnarly rename trick for estout
 .         local rename = ""
-r; t=0.00 17:47:54
+r; t=0.00 0:45:05
 .         foreach v in New_ gone_ TENURE_ EMPLOY_ {
   2.         ds `v'*
   3.         di "`r(varlist)'"
@@ -9632,7 +9638,7 @@ TENURE_1999  TENURE_2000  TENURE_2001  TENURE_2002  TENURE_2003  TENURE_2004  TE
 TENURE_1999 TENURE_2000 TENURE_2001 TENURE_2002 TENURE_2003 TENURE_2004 TENURE_2005 TENURE_2006 TENURE_0 TENURE_1
 EMPLOY_1999  EMPLOY_2000  EMPLOY_2001  EMPLOY_2002  EMPLOY_2003  EMPLOY_2004  EMPLOY_2005  EMPLOY_2006  EMPLOY_0     EMPLOY_1
 EMPLOY_1999 EMPLOY_2000 EMPLOY_2001 EMPLOY_2002 EMPLOY_2003 EMPLOY_2004 EMPLOY_2005 EMPLOY_2006 EMPLOY_0 EMPLOY_1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:05
 .         di "`rename'"
  New_1999 year1999 New_2000 year2000 New_2001 year2001 New_2002 year2002 New_2003 year2003 New_2004 year2004 New_2005 year2005 New_2006 
 > year2006 New_0 post0 New_1 post1 gone_1999 year1999 gone_2000 year2000 gone_2001 year2001 gone_2002 year2002 gone_2003 year2003 gone_2
@@ -9640,7 +9646,7 @@ r; t=0.00 17:47:54
 > r2001 TENURE_2002 year2002 TENURE_2003 year2003 TENURE_2004 year2004 TENURE_2005 year2005 TENURE_2006 year2006 TENURE_0 post0 TENURE_1
 >  post1 EMPLOY_1999 year1999 EMPLOY_2000 year2000 EMPLOY_2001 year2001 EMPLOY_2002 year2002 EMPLOY_2003 year2003 EMPLOY_2004 year2004 E
 > MPLOY_2005 year2005 EMPLOY_2006 year2006 EMPLOY_0 post0 EMPLOY_1 post1
-r; t=0.00 17:47:54
+r; t=0.00 0:45:05
 .                 
 .         *t(pattern(0 0 1 0 0 1 0 0 1) par fmt(2))
 .         noi     esttab *, cells("mean(pattern(1 1 0 1 1 0 1 1 0 1 1 0) fmt(2))  b(star pattern(0 0 1 0 0 1 0 0 1 0 0 1) fmt(2) label(d
@@ -9686,7 +9692,7 @@ Observations                  758          809         1567             754     
 >    1408             726          794         1520   
 ----------------------------------------------------------------------------------------------------------------------------------------
 > ----------------------------------------------------
-r; t=0.06 17:47:54
+r; t=0.08 0:45:05
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T11_raw") ///
@@ -9735,15 +9741,15 @@ Observations                  758          809         1567             754     
 >    1408             726          794         1520   
 ----------------------------------------------------------------------------------------------------------------------------------------
 > ----------------------------------------------------
-r; t=0.19 17:47:54
+r; t=1.90 0:45:07
 .         
 .         * get post minus pre for each column
 .         
 .         g post = p // having a p and a post allows us to put post coefs in the same row as the interaction term in the three models be
 > low
-r; t=0.00 17:47:54
+r; t=0.00 0:45:07
 .         eststo clear
-r; t=0.00 17:47:54
+r; t=0.01 0:45:07
 .         foreach v in new_board_members departed_board tenure_length former_employee_yn {
   2.                 eststo: reg `v' post                    if R == 1 & t_Comm == 1
   3.                 eststo: reg `v' post                    if R == 0 & t_Comm == 1
@@ -9945,7 +9951,7 @@ former_emp~n | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
        _cons |   .4937656   .0386046    12.79   0.000     .4180414    .5694898
 ------------------------------------------------------------------------------
 (est12 stored)
-r; t=0.08 17:47:54
+r; t=0.11 0:45:07
 .         
 .         * notice the "rename()" arg below
 .         esttab,  order(post   ) rename(c.p#c.R post) keep(post) star(* 0.10 ** 0.05 *** 0.01 ) b(2) compress 
@@ -9970,7 +9976,7 @@ N                758          809         1567          754          806        
 > ------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.05 17:47:54
+r; t=0.07 0:45:07
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T11_diffrow_raw") ///
@@ -9998,25 +10004,25 @@ N                758          809         1567          754          806        
 > ------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.16 17:47:54
+r; t=2.14 0:45:09
 . }       
-r; t=1.10 17:47:54
+r; t=5.05 0:45:09
 
 .         
 . *************************************************************************
 . * Table 12: CEO pay (continuation of code, not isolated block)
 . *************************************************************************
 . {       
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:47:54
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:45:09
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 17:47:54
+r; t=0.02 0:45:09
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -10046,20 +10052,20 @@ r; t=0.02 17:47:54
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:47:54
+r; t=0.01 0:45:09
 .         
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.03 17:47:54
+r; t=0.03 0:45:09
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -10073,20 +10079,20 @@ r; t=0.03 17:47:54
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .                 
 .         * Adjust labels for table - the title will clarify they are log(1+Y)
 .         lab var tdc1                                    "TDC1"
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         lab var tdc2                                    "TDC2"
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         lab var total_curr                              "Salary+Bonus"
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         lab var option_awards_blk_value "OptionsGranted"
-r; t=0.00 17:47:54
+r; t=0.00 0:45:09
 .         
 .         eststo clear    
-r; t=0.01 17:47:54
+r; t=0.01 0:45:09
 .         
 .          foreach v in  tdc1 tdc2 total_curr { // 
   2.                 local lab: var lab `v'
@@ -10622,7 +10628,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1420
-r; t=0.60 17:47:55
+r; t=0.64 0:45:10
 .                         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("T12_raw") ///
@@ -10671,9 +10677,9 @@ MeanY                 7.79         7.79         7.56         7.57         6.79  
 ----------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.17 17:47:55
+r; t=2.13 0:45:12
 . }               
-r; t=0.84 17:47:55
+r; t=2.85 0:45:12
 
 . 
 . 
@@ -10691,38 +10697,47 @@ r; t=0.84 17:47:55
 > 
 > */
 . {
-.         local N 10000 // number of trials to run
-r; t=0.00 17:47:55
+.         
+.         if $using_fake_data == 0 {
+.                 local N 10000 // number of trials to run
+r; t=0.00 0:45:12
+.         }
+r; t=0.00 0:45:12
+.         else {
+.                 local N 100 // just enough to plot 
+r; t=0.00 0:45:12
+.         }
+r; t=0.00 0:45:12
 . 
 .         *ssc install schemepack, replace (to get white_tableau)
 .         set scheme white_tableau 
-r; t=0.00 17:47:55
+r; t=0.01 0:45:12
 . 
 .         local DDDterms Rpt_Comm Rp pt_Comm
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         local tvar t_Comm
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 
 .         cap file close L20_data
-r; t=0.00 17:47:55
-.         file open L20_data using "$output_folder/L1percO_data.txt", write text replace
+r; t=0.00 0:45:12
+.         file open  L20_data using "$output_folder/L1percO_data.txt", write text replace
 (file outputs/L1percO_data.txt not found)
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         file write L20_data "iteration,beta,tstat" _n
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         
 .         *** prep 
 . 
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 17:47:55
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 0:45:12
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.01 17:47:55
+r; t=0.03 0:45:12
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -10752,23 +10767,23 @@ r; t=0.01 17:47:55
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.00 17:47:55
+r; t=0.01 0:45:12
 .         cap g sic2 = floor(sic3/10)
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 
 .         eststo clear    
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         
 .         * get list of gvkeys in main test
 .         
 .         preserve
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 reghdfe         prof_a `DDDterms'  if close  & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey fyear)   nocons
 > t
 (MWFE estimator converged in 4 iterations)
@@ -10799,63 +10814,63 @@ Absorbed degrees of freedom:
        fyear |         8           0           8     |
 -----------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.03 17:47:55
+r; t=0.03 0:45:12
 .                 keep if e(sample) 
 (4,536 observations deleted)
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 keep gvkey
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 duplicates drop *, force
 
 Duplicates in terms of gvkey
 
 (3,831 observations deleted)
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 sort gvkey
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 tempfile gvkeys
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 save `gvkeys'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000t.tmp saved as .dta format
-r; t=0.00 17:47:55
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000t.tmp saved as .dta format
+r; t=0.00 0:45:12
 .                 count
   556
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         restore         
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         
 .         * decide which firms to drop in each iteration of the test
 .         
 .         preserve 
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 clear
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 tempfile dropgvkeys
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 save `dropgvkeys', replace emptyok
 (dataset contains 0 observations)
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000v.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00000v.tmp saved as .dta format
-r; t=0.00 17:47:55
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000v.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00000v.tmp saved as .dta format
+r; t=0.00 0:45:12
 .         restore 
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         
 .         set seed 42 
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .         preserve 
-r; t=0.00 17:47:55
+r; t=0.00 0:45:12
 .                 qui forval i = 1/`N' {
-r; t=76.02 17:49:11
+r; t=146.17 0:47:38
 .         restore         
-r; t=0.00 17:49:11
+r; t=0.00 0:47:38
 .         
 .         * loop over iterations of dropped gvkeys, within each, run models and save outputs  
 .                 
 .         set seed 42
-r; t=0.00 17:49:11
+r; t=0.00 0:47:38
 .         
 .         local i = 1 // overall iteration counter (across Y and controls)
-r; t=0.00 17:49:11
+r; t=0.00 0:47:38
 .         qui foreach v in prof_a prof_sale {     
 ........................................................................................................................................
 > ......................................................................................................................................
@@ -11155,57 +11170,76 @@ r; t=0.00 17:49:11
 > ......................................................................................................................................
 > ......................................................................................................................................
 > ......................................................................................................................................
-> ..................................................................r; t=5996.87 19:29:08
+> ..................................................................r; t=6952.42 2:43:31
 .         
 .         file close L20_data
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .         
 .         // Convert matrix to dataset
 .         import delim using "$output_folder/L1percO_data.txt", clear
 (encoding automatically selected: ISO-8859-1)
 (3 vars, 40,000 obs)
-r; t=0.18 19:29:08
+r; t=0.18 2:43:31
 .         
 .         count 
   40,000
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .         g yvar       = "(1) ROA, no controls"    
-r; t=0.01 19:29:08
+r; t=0.01 2:43:31
 .         replace yvar = "(2) ROA, with controls"             if _n > 1*_N/4
 variable yvar was str20 now str22
 (30,000 real changes made)
-r; t=0.01 19:29:08
+r; t=0.01 2:43:31
 .         replace yvar = "(3) Profit Margin, no controls"     if _n > 2*_N/4
 variable yvar was str22 now str30
 (20,000 real changes made)
-r; t=0.01 19:29:08
+r; t=0.01 2:43:31
 .         replace yvar = "(4) Profit Margin, with controls"   if _n > 3*_N/4
 variable yvar was str30 now str32
 (10,000 real changes made)
-r; t=0.01 19:29:08
+r; t=0.00 2:43:31
 .                 
 .         // this is just to pick the order of columns not by alphabetical (HT nick cox DA LEGEND)
 .         
 .         g yvar_order       = 1    
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .         replace yvar_order = 2 if _n > 1*_N/4
 (30,000 real changes made)
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .         replace yvar_order = 3 if _n > 2*_N/4
 (20,000 real changes made)
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .         replace yvar_order = 4 if _n > 3*_N/4
 (10,000 real changes made)
-r; t=0.00 19:29:08
+r; t=0.00 2:43:31
 .                 
 .         egen yvar2 = group(yvar_order yvar)
-r; t=0.03 19:29:08
+r; t=0.01 2:43:31
 .         labmask yvar2, values(yvar)                     
-r; t=0.02 19:29:08
+r; t=0.02 2:43:31
 .                 
 .         // graph t-stats 
 .                            
-.         twoway (histogram  tstat  ,  percent  start(1) bins(30) pstyle( p1bar)  lw(none)  ) ///
+.         if $using_fake_data == 0 {
+.                 local start_tstat 1
+r; t=0.00 2:43:31
+.                 local start_beta  0.01
+r; t=0.00 2:43:31
+.         }
+r; t=0.00 2:43:31
+.         else {
+.                 sum tstat 
+r; t=0.00 2:43:31
+.                 local start_tstat = `r(min)'-.5
+r; t=0.00 2:43:31
+.                 sum beta 
+r; t=0.00 2:43:31
+.                 local start_beta  = `r(min)'-.5
+r; t=0.00 2:43:31
+.         }
+r; t=0.00 2:43:31
+.         
+.         twoway (histogram  tstat  ,  percent  start(`start_tstat') bins(30) pstyle( p1bar)  lw(none)  ) ///
 >                    , ///
 >                    xline(1.96, lc(red) lp(dash) lstyle(foreground))  /// 
 >                    xline(1.65, lc(red) lp(dash) lstyle(foreground)) ///
@@ -11214,9 +11248,9 @@ r; t=0.02 19:29:08
 >                    ytitle("") xtitle("") /// subtitle("")   ///
 >                    ysize(6) xsize(3)  xlabel(,labsize(medlarge)) ylabel(,labsize(medlarge)) ///
 >                    name(tstats, replace)
-r; t=3.99 19:29:12
+r; t=1.24 2:43:32
 .         
-.         twoway (histogram  beta  ,  percent start(0.01) bins(30) pstyle( p1bar)  lw(none) ) ///
+.         twoway (histogram  beta  ,  percent start(`start_beta') bins(30) pstyle( p1bar)  lw(none) ) ///
 >                    , ///
 >                    by(yvar2, rows(4) title("{&beta}{subscript:1}", size(large)) note("") subtitle(" ", size(medlarge)  margin(l+0 r+0 
 > b-1 t-1)) ) ///
@@ -11224,26 +11258,26 @@ r; t=3.99 19:29:12
 >                    ysize(6) xsize(3)  xlabel(0.01(0.01)0.05,labsize(medlarge)) ylabel(,labsize(medlarge)) ///
 >                    legend(off label(1 "Non-Reclassifiers") label(2 "Reclassifiers") rows(1)) ///
 >                    name(betas, replace)
-r; t=0.95 19:29:13
+r; t=0.78 2:43:33
 .         
 .         graph combine tstats betas, xsize(6) ysize(6.5) plotregion(margin(0 0 -5 -5)) 
-r; t=3.03 19:29:16
+r; t=2.70 2:43:36
 .         
 .         *grc1leg2 tstats betas, xsize(6) ysize(6.5) plotregion(margin(0 0 -5 -5)) hidelegendfrom   noauto
 . 
 .         graph export "$output_folder/Fig_3_L1percO.png" , replace
 (file outputs/Fig_3_L1percO.png not found)
 file outputs/Fig_3_L1percO.png saved as PNG format
-r; t=0.37 19:29:17
+r; t=0.34 2:43:36
 .         graph export "$output_folder/Fig_3_L1percO.eps" , replace
 (file outputs/Fig_3_L1percO.eps not found)
 file outputs/Fig_3_L1percO.eps saved as EPS format
-r; t=0.02 19:29:17
+r; t=0.02 2:43:36
 .         
 .         g pabove5  = tstat < 1.96
-r; t=0.00 19:29:17
+r; t=0.00 2:43:36
 .         g pabove10 = tstat < 1.65
-r; t=0.00 19:29:17
+r; t=0.00 2:43:36
 .         tabstat pabove* , by(yvar) s(mean count sum)
 
 Summary statistics: Mean, N, Sum
@@ -11271,54 +11305,30 @@ Group variable: yvar
                  |     40000     40000
                  |      9559       112
 --------------------------------------
-r; t=0.04 19:29:17
+r; t=0.02 2:43:36
 .         
-. /*
-> N=10,000
-> 
->             yvar |   pabove5  pabove10
-> -----------------+--------------------
-> (1) ROA, no cont |         0         0
->                  |     10000     10000
->                  |         0         0
-> -----------------+--------------------
-> (2) ROA, with co |         0         0
->                  |     10000     10000
->                  |         0         0
-> -----------------+--------------------
-> (3) Profit Margi |     .0767     .0012
->                  |     10000     10000
->                  |       767        12
-> -----------------+--------------------
-> (4) Profit Margi |     .8792       .01
->                  |     10000     10000
->                  |      8792       100
-> -----------------+--------------------
->            Total |   .238975     .0028
->                  |     40000     40000
->                  |      9559       112
-> --------------------------------------
-> */      
 . }       
-r; t=6081.67 19:29:17
+r; t=7104.09 2:43:36
 
 . 
 . ********************************************************************************
 . * Fig IA1: director propensity to be on committee in event time around reclassification
 . ********************************************************************************
-. {
+. 
+. if $using_fake_data == 0 {
+.         
 . *** get main sample firms 
 . 
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.02 19:29:17
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.01 2:43:36
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.08 19:29:17
+r; t=0.03 2:43:36
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -11348,13 +11358,13 @@ r; t=0.08 19:29:17
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.02 19:29:17
+r; t=0.00 2:43:36
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.05 19:29:17
+r; t=0.01 2:43:36
 .                 
 .         reghdfe prof_a Rpt_Comm Rp pt_Comm  if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2)      
 >           
@@ -11388,18 +11398,18 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=1.21 19:29:18
+r; t=0.54 2:43:36
 .         keep if e(sample) 
 (4,586 observations deleted)
-r; t=0.00 19:29:18
+r; t=0.00 2:43:36
 .         
 .         collapse (max) R t_Comm (firstnm) cusip6 , by(gvkey)    
-r; t=0.06 19:29:18
+r; t=0.01 2:43:36
 .         tempfile sample_firm_R_t
-r; t=0.00 19:29:18
+r; t=0.00 2:43:36
 .         save `sample_firm_R_t'  
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00217v.tmp saved as .dta format
-r; t=0.00 19:29:18
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00217v.tmp saved as .dta format
+r; t=0.00 2:43:37
 .         
 . *** load director file
 .         
@@ -11407,19 +11417,19 @@ r; t=0.00 19:29:18
 .         import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.06 19:29:18
+r; t=0.03 2:43:37
 .         rename cusip6_irrc cusip6 
-r; t=0.03 19:29:18
+r; t=0.01 2:43:37
 .         tempfile ccm_cusip6_lookup
-r; t=0.00 19:29:18
+r; t=0.00 2:43:37
 .         save `ccm_cusip6_lookup', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00217w.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_00217w.tmp saved as .dta format
-r; t=0.00 19:29:18
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00217w.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_00217w.tmp saved as .dta format
+r; t=0.00 2:43:37
 .         
 .         * load director level, update cusip6 to match CCM'R 6 digit cusip 
 .         use "$dir_lvl_out", clear
-r; t=0.18 19:29:19
+r; t=0.14 2:43:37
 .         merge m:1 cusip6 using `ccm_cusip6_lookup'
 
     Result                      Number of obs
@@ -11430,12 +11440,12 @@ r; t=0.18 19:29:19
 
     Matched                             2,417  (_merge==3)
     -----------------------------------------
-r; t=0.12 19:29:19
+r; t=0.12 2:43:37
 .         replace cusip6 = cusip6_ccm if _m == 3 & !missing(cusip6_ccm)
 (2,417 real changes made)
-r; t=0.01 19:29:19
+r; t=0.01 2:43:37
 .         drop cusip6_ccm _m 
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         
 .         * reduce to sample firms
 .         merge m:1 cusip6 using `sample_firm_R_t', keep(3) nogen 
@@ -11445,62 +11455,62 @@ r; t=0.00 19:29:19
     Not matched                             0
     Matched                            44,801  
     -----------------------------------------
-r; t=0.18 19:29:19
+r; t=0.18 2:43:37
 .                 
 .         * reduce to reclassifying directors
 .         g temp =switchto_Indman if inrange(fyear,2002,2006)     
 (24,761 missing values generated)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         egen R_director = max(temp)     , by(cusip6 dir_id)
 (6,244 missing values generated)
-r; t=0.05 19:29:19
+r; t=0.02 2:43:37
 .         keep if R_director
 (36,354 observations deleted)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 . 
 .         * get event time indicator around the reclass
 .         // we will xtset on dir-firm-year. we need a joint dir-firm var, but the existing one is not fully done 
 .         
 .         drop dir_firm_id // not fully avail, 
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         egen dir_firm_id = group(cusip6 dir_id)
-r; t=0.01 19:29:19
+r; t=0.01 2:43:37
 .         xtset dir_firm_id fyear
 
 Panel variable: dir_firm_id (unbalanced)
  Time variable: fyear, 1996 to 2006, but with gaps
          Delta: 1 year
-r; t=0.01 19:29:19
+r; t=0.01 2:43:37
 .         
 .         g        reclass_etime = -3 if F3.switchto_Indman == 1
 (8,157 missing values generated)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = -2 if F2.switchto_Indman == 1
 (319 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = -1 if F1.switchto_Indman == 1
 (364 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = 0  if    switchto_Indman == 1
 (364 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = 1  if L1.switchto_Indman == 1
 (256 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = 2  if L2.switchto_Indman == 1
 (172 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         replace  reclass_etime = 3  if L3.switchto_Indman == 1
 (112 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         
 .         g dir_on_comm = (audit_membership == 1 |  comp_membership == 1 |  gov_comm_mem == 1 |  nom_membership == 1 )
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .         
 .         * get director propensity to be on committee in event time around reclassification
 . 
 .         collapse dir_on_comm audit_membership comp_membership gov_comm_mem nom_membership, by(reclass_etime)
-r; t=0.01 19:29:19
+r; t=0.01 2:43:37
 .         
 .         foreach v in dir_on_comm audit_membership comp_membership gov_comm_mem nom_membership {
   2.                 replace `v' = `v'*100 // express as %
@@ -11510,7 +11520,7 @@ r; t=0.01 19:29:19
 (8 real changes made)
 (8 real changes made)
 (8 real changes made)
-r; t=0.00 19:29:19
+r; t=0.00 2:43:37
 .                         
 .         line dir_on_comm audit_membership comp_membership gov_comm_mem nom_membership reclass_etime, ///
 >                 xtitle("Years Relative to Reclassification") ytitle("% of Reclassified Directors") ///
@@ -11532,29 +11542,31 @@ r; t=0.00 19:29:19
 (note:  linewidth not found in scheme, default attributes used)
 (note:  named style med not found in class linewidth, default attributes used)
 (note:  linewidth not found in scheme, default attributes used)
-r; t=0.65 19:29:20
+r; t=0.56 2:43:38
 .         
 .         graph export "$output_folder/Fig_IA1_reclass_on_committee.png", replace
 (file outputs/Fig_IA1_reclass_on_committee.png not found)
 file outputs/Fig_IA1_reclass_on_committee.png saved as PNG format
-r; t=0.16 19:29:20
+r; t=0.14 2:43:38
 .         graph export "$output_folder/Fig_IA1_reclass_on_committee.eps", replace
 (file outputs/Fig_IA1_reclass_on_committee.eps not found)
 file outputs/Fig_IA1_reclass_on_committee.eps saved as EPS format
-r; t=0.02 19:29:20
+r; t=0.01 2:43:38
 . }       
-r; t=2.92 19:29:20
+r; t=1.86 2:43:38
 
 .                         
 .         
 . ****************************************************************
 . * Table IA1: Count of NC and R, by independence definition 
 . ****************************************************************
-. {       
+. 
+. if $using_fake_data == 0 {
+.         
 . * load director level data with all variations of definition of Independent
 .         
 .         use  "$dir_lvl_out", clear
-r; t=0.09 19:29:20
+r; t=0.08 2:43:38
 . 
 . * get to firm level dataset with R and t_Comm, as in main code
 .         
@@ -11605,11 +11617,11 @@ r; t=0.09 19:29:20
 (163,681 missing values generated)
 (163,410 missing values generated)
 (167,547 missing values generated)
-r; t=0.13 19:29:20
+r; t=0.14 2:43:38
 . 
 .         * collapse to board level
 .         collapse (mean) R_0 - gov_indep_man, by(cusip6)
-r; t=0.13 19:29:20
+r; t=0.14 2:43:38
 . 
 .         * R = 1 sum(SWITCHTO ) > 0
 .         foreach def in 0 1 2 man {
@@ -11619,7 +11631,7 @@ r; t=0.13 19:29:20
 (772 real changes made)
 (447 real changes made)
 (452 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 . 
 .         * non-compliance aka treatment ("t") (NC in paper) = 1 if 
 .         foreach def in 0 1 2  man {
@@ -11630,7 +11642,7 @@ r; t=0.00 19:29:20
 (710 real changes made)
 (460 real changes made)
 (454 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 . 
 .         foreach def in 0 1 2  man {
   2.                 replace t_`def'  = t_`def' == 1 | nom_indep_`def' < 1 | comp_indep_`def' < 1  | audit_indep_`def' < 1  | gov_indep_
@@ -11640,44 +11652,44 @@ r; t=0.00 19:29:20
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         
 . * find the subset of this that is in the main test
 . 
 .         keep cusip6 R_* t_*
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         rename *man *3
-r; t=0.01 19:29:20
+r; t=0.00 2:43:38
 . 
 .         * merge in cusip6_ccm and then on cusip6_ccm fyear of main test
 .         
 .         preserve
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.01 19:29:20
+r; t=0.01 2:43:38
 .                 keep cusip*
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 tempfile ccm_cusip6_lookup
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 save `ccm_cusip6_lookup', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002180.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002180.tmp saved as .dta format
-r; t=0.00 19:29:20
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002180.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002180.tmp saved as .dta format
+r; t=0.00 2:43:38
 . 
 .                 * get sample of main test
 .                 
-.                 use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 19:29:20
-.                 merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.                 use "$temp/fy_panel", clear 
+r; t=0.00 2:43:38
+.                 merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.04 19:29:20
+r; t=0.03 2:43:38
 .                 define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -11707,13 +11719,13 @@ r; t=0.04 19:29:20
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 xtset gvkey fyear                                               
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:29:20
+r; t=0.01 2:43:38
 .                 reghdfe prof_a Rpt_Comm Rp pt_Comm if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2
 > ) nocons
 (dropped 50 singleton observations)
@@ -11745,23 +11757,23 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.08 19:29:20
+r; t=0.07 2:43:38
 .                 keep if e(sample)
 (4,586 observations deleted)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 keep cusip6 
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 duplicates drop *, force
 
 Duplicates in terms of cusip6
 
 (3,786 observations deleted)
-r; t=0.02 19:29:20
+r; t=0.00 2:43:38
 .                 count
   551
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 rename cusip6 cusip6_ccm
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 merge 1:1 cusip6_ccm using `ccm_cusip6_lookup', keep(1 3)
 
     Result                      Number of obs
@@ -11772,23 +11784,23 @@ r; t=0.00 19:29:20
 
     Matched                                15  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:20
+r; t=0.02 2:43:38
 .                 replace cusip6_ccm = cusip6_irrc if !missing(cusip6_irrc)
 (15 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 keep cusip6_ccm
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 rename cusip6 cusip6
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 tempfile cusip6_in_main
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 save `cusip6_in_main', replace 
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002181.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002181.tmp saved as .dta format
-r; t=0.00 19:29:20
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002181.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002181.tmp saved as .dta format
+r; t=0.00 2:43:38
 .                 
 .         restore 
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 . 
 .         merge 1:1 cusip6 using `cusip6_in_main'
 
@@ -11800,16 +11812,16 @@ r; t=0.00 19:29:20
 
     Matched                               551  (_merge==3)
     -----------------------------------------
-r; t=0.03 19:29:20
+r; t=0.04 2:43:38
 .         
 .         g R_4 = R_3 if _merge == 3
 (2,465 missing values generated)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         g t_4 = t_3 if _merge == 3
 (2,465 missing values generated)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         drop _m
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         
 .         * construct the table 
 .         
@@ -11825,30 +11837,30 @@ xij variables:
                         R_0 R_1 ... R_4   ->   R_
                         t_0 t_1 ... t_4   ->   t_
 -----------------------------------------------------------------------------
-r; t=0.14 19:29:20
+r; t=0.11 2:43:38
 . 
 .         tostring def, replace
 def was byte now str1
-r; t=0.02 19:29:20
+r; t=0.01 2:43:38
 .         replace def = "manual" if def == "3"
 variable def was str1 now str6
 (3,016 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         replace def = "in main test" if def == "4"
 variable def was str6 now str12
 (3,016 real changes made)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 . 
 .         keep if !missing(R_) & !missing(t_)    /* IMPORTANT: SAMPLE RESTRICTION ON THIS TABLE */
 (8,958 observations deleted)
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         g N_ = 1
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .         g Rt = R*t
-r; t=0.00 19:29:20
+r; t=0.00 2:43:38
 .                 
 .         eststo clear
-r; t=0.02 19:29:20
+r; t=0.00 2:43:38
 .         estpost tabstat N_ R_ t_ Rt if !missing(R_) & !missing(t_), s(sum) by(def) listwise nototal
 
 Summary statistics: sum
@@ -11862,7 +11874,7 @@ Summary statistics: sum
            2 |      1388        420        429        205 
 in_main_test |       551        196        199         96 
       manual |      1407        423        442        203 
-r; t=0.05 19:29:21
+r; t=0.02 2:43:38
 .         esttab, cells("N_(fmt(%9.0fc)) R_ t_ Rt") 
 
 ----------------------------------------------------------------
@@ -11878,7 +11890,7 @@ manual              1,407          423          442          203
 ----------------------------------------------------------------
 N                    6122                                       
 ----------------------------------------------------------------
-r; t=0.08 19:29:21
+r; t=0.04 2:43:38
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("IA1_raw") ///
@@ -11898,25 +11910,25 @@ manual              1,407          423          442          203
 ----------------------------------------------------------------
 N                    6122                                       
 ----------------------------------------------------------------
-r; t=0.18 19:29:21
+r; t=0.13 2:43:39
 . }               
-r; t=1.06 19:29:21
+r; t=0.85 2:43:39
 
 . 
 . ********************************************************************************        
 . * Table IA2: board summary stats
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 19:29:21
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 2:43:39
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 19:29:21
+r; t=0.02 2:43:39
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -11946,16 +11958,16 @@ r; t=0.02 19:29:21
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:29:21
+r; t=0.01 2:43:39
 .         
 .         eststo clear    
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         * reduce to main sample
 .         
@@ -11991,10 +12003,10 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.07 19:29:21
+r; t=0.08 2:43:39
 .         keep if e(sample)
 (4,586 observations deleted)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         tabstat gvkey , by(fyear) s(count) save // row 1
 
@@ -12014,7 +12026,7 @@ Group variable: fyear (Data Year - Fiscal)
 ---------+----------
    Total |      4337
 --------------------
-r; t=0.00 19:29:21
+r; t=0.01 2:43:39
 .         tabstatmat A, nototal
 
 A[8,1]
@@ -12027,9 +12039,9 @@ A[8,1]
 2004:N    548
 2005:N    549
 2006:N    514
-r; t=0.01 19:29:21
+r; t=0.00 2:43:39
 .         mat A = A'
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .                                 
 .         tabstat SIZE INDEP NOT_INDEP                /// board comp (panel A)
 >                         HIRE_IND SWITCHTO_IND NONRETURN_NOT /// moves towards indep (panel B)
@@ -12052,7 +12064,7 @@ Group variable: fyear (Data Year - Fiscal)
 ---------+------------------------------------------------------------------------------------------
    Total |  8.161625  5.802355  2.359039  .6474255  .1015932  .2227642  .1546987   .056338   .528223
 ----------------------------------------------------------------------------------------------------
-r; t=0.01 19:29:21
+r; t=0.02 2:43:39
 .         tabstatmat B, nototal
 
 B[8,9]
@@ -12075,22 +12087,22 @@ B[8,9]
 2004:Mean      .51642336
 2005:Mean      .83211679
 2006:Mean      .52641879
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         mat B = B'
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         // panel D: formulaic, in excel, based on averages (not director level...)
 .         
 .         // panel E
 .         g       temp1           = SWITCHTO_IND > 0 if SWITCHTO_IND != . 
 (6 missing values generated)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         g       temp2           = SWITCHTO_NOT > 0 if SWITCHTO_NOT != .
 (6 missing values generated)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         g       temp3           = temp1 == 1 | temp2 == 1 if SWITCHTO_IND != .
 (6 missing values generated)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         tabstat temp*, s(mean) by(fyear) save
 
@@ -12110,7 +12122,7 @@ Group variable: fyear (Data Year - Fiscal)
 ---------+------------------------------
    Total |  .0914338  .0533364  .1399215
 ----------------------------------------
-r; t=0.01 19:29:21
+r; t=0.01 2:43:39
 .         tabstatmat C, nototal
 
 C[8,3]
@@ -12123,57 +12135,59 @@ C[8,3]
 2004:Mean  .07481752  .05656934  .12591241
 2005:Mean  .06569343  .06386861  .12408759
 2006:Mean   .0665362  .05870841  .12133072
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         mat C = C'
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 . 
 .         putexcel set "$excel_filename", modify  sheet("IA2_raw", replace)       
-r; t=0.04 19:29:21
+r; t=0.08 2:43:39
 .         putexcel A1 = matrix(A), names
 file outputs/AnalysisOutput.xlsx saved
-r; t=0.05 19:29:21
+r; t=0.07 2:43:39
 .         putexcel A5 = matrix(B), names
 file outputs/AnalysisOutput.xlsx saved
-r; t=0.06 19:29:21
+r; t=0.06 2:43:39
 .         putexcel A17 = matrix(C), names
 file outputs/AnalysisOutput.xlsx saved
-r; t=0.05 19:29:21
+r; t=0.06 2:43:39
 .         putexcel save
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 . }       
-r; t=0.35 19:29:21
+r; t=0.43 2:43:39
 
 . 
 . ********************************************************************************        
 . * Table IA3: merger activity test - propensity, CARs, goodwill impairment 
 . * involves one-time manual intermediate step to go to event-study-wrds
 . ********************************************************************************
-. {
+. 
+. if $using_fake_data == 0 {
+.         
 . * get CAR -2,2 for mergers in our sample
 . * get event study datasets - with ARs, etc. 
 . * put outputs in merger_CARs folder (key file: merger_CARs/event-level_CAPM.dta)
 . 
 .         use "$completed_mergers" , clear
-r; t=0.05 19:29:21
+r; t=0.04 2:43:39
 .         destring gvkey, replace
 gvkey: all characters numeric; replaced as long
-r; t=0.17 19:29:21
+r; t=0.10 2:43:39
 .         
 .         keep if inlist(form,"Acq. Maj. Int.","Acq. of Assets","Merger")
 (3,775 observations deleted)
-r; t=0.01 19:29:21
+r; t=0.01 2:43:39
 .         keep if transvalue > 5 // 5 mil
 (7,427 observations deleted)
-r; t=0.01 19:29:21
+r; t=0.01 2:43:39
 .         
 .         keep dealnum ayear gvkey adate transvalue 
-r; t=0.00 19:29:21
+r; t=0.01 2:43:39
 .         rename ayear fyear
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         count
   73,264
-r; t=0.00 19:29:21
-.         merge m:1 gvkey fyear using "$temp/fy_panel_nobandwidth", keep(3) keepusing(lpermno) nogen // reduce to our sample, get permno
+r; t=0.00 2:43:39
+.         merge m:1 gvkey fyear using "$temp/fy_panel", keep(3) keepusing(lpermno) nogen // reduce to our sample, get permno
 (variable fyear was float, now double to accommodate using data's values)
 
     Result                      Number of obs
@@ -12181,22 +12195,22 @@ r; t=0.00 19:29:21
     Not matched                             0
     Matched                            10,140  
     -----------------------------------------
-r; t=0.02 19:29:21
+r; t=0.03 2:43:39
 .         tostring adate, g(date_text2) format(%tdCYND) force
 date_text2 generated as str8
 date_text2 was forced to string; some loss of information
-r; t=0.01 19:29:21
+r; t=0.01 2:43:39
 .         
 .         preserve 
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         keep  lpermno date_text2
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         order lpermno date_text2
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         cap export delim using "inputs/permno_dates_for_eventus.txt", novar delim(" ")
-r; t=0.03 19:29:21
+r; t=0.02 2:43:39
 .         restore 
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         /*
 >         Source: https://wrds-www.wharton.upenn.edu/pages/get-data/event-study-wrds/us-daily-event-study-Upload-your-own-events/
@@ -12220,7 +12234,7 @@ r; t=0.00 19:29:21
 >         */
 . 
 .         rename (lpermno adate) (permno evtdate)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         merge m:1 permno evtdate using "inputs/event-level_CAPM",       keep(1 3)
 
     Result                      Number of obs
@@ -12231,19 +12245,19 @@ r; t=0.00 19:29:21
 
     Matched                             9,766  (_merge==3)
     -----------------------------------------
-r; t=0.03 19:29:21
+r; t=0.04 2:43:39
 .         
 .         rename (cret car bhar) =_CAPM
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         drop nrets* Model
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 . 
 .         g negative_car = car_CAPM < 0 if !missing(car_CAPM)     
 (374 missing values generated)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         sort permno evtdate
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         * sometimes the merger announcement isn't a trading day, and 
 .         * eventus outputs the event with a date set to the next trading day
@@ -12255,7 +12269,7 @@ r; t=0.00 19:29:21
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         foreach v of varlist *_CAPM {
   2.                 // delete the excess lines of data this created 
@@ -12264,11 +12278,11 @@ r; t=0.00 19:29:21
 (0 observations deleted)
 (0 observations deleted)
 (0 observations deleted)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 . 
 .         count
   10,140
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         mdesc
 
     Variable    |     Missing          Total     Percent Missing
@@ -12286,56 +12300,56 @@ r; t=0.00 19:29:21
          _merge |           0         10,140           0.00
    negative_car |         374         10,140           3.69
 ----------------+-----------------------------------------------
-r; t=0.01 19:29:21
+r; t=0.00 2:43:39
 .         drop _m
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         
 .         * lets get the right fiscal year  (and gvkey)
 .         
 .         drop fyear // to this point, we'd used calendar year (it was good enough to snag permnos)
-r; t=0.00 19:29:21
+r; t=0.00 2:43:39
 .         distinct permno evtdate, j
 
         Observations
       total   distinct
       10140       9517
-r; t=0.01 19:29:21
+r; t=0.00 2:43:39
 .         distinct dealnum
 
          |        Observations
          |      total   distinct
 ---------+----------------------
  dealnum |      10140      10140
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .         
 .         preserve
-r; t=0.00 19:29:22
-.                 use lpermno gvkey fyear datadate using "$temp/fy_panel_nobandwidth", clear
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
+.                 use lpermno gvkey fyear datadate using "$temp/fy_panel", clear
+r; t=0.00 2:43:39
 .                 tempfile fy_id
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .                 save `fy_id'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002184.tmp saved as .dta format
-r; t=0.00 19:29:22
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002184.tmp saved as .dta format
+r; t=0.00 2:43:39
 .         restore
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .         
 .         rename permno lpermno
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .         joinby lpermno using `fy_id'
-r; t=0.11 19:29:22
+r; t=0.12 2:43:39
 .         distinct dealnum
 
          |        Observations
          |      total   distinct
 ---------+----------------------
  dealnum |      98742      10140
-r; t=0.02 19:29:22
+r; t=0.03 2:43:39
 .         
 .         bysort dealnum (datadate): g maybe_bool = datadate >= evtdate
-r; t=0.01 19:29:22
+r; t=0.01 2:43:39
 .         bysort dealnum (datadate): g maybe_run = sum(datadate >= evtdate)
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .         tab maybe_*
 
            |                                                   maybe_run
@@ -12354,7 +12368,7 @@ maybe_bool |        10 |     Total
          1 |       925 |    57,798 
 -----------+-----------+----------
      Total |       925 |    98,742 
-r; t=0.00 19:29:22
+r; t=0.00 2:43:39
 .         
 .         distinct dealnum if maybe_bool == maybe_run & maybe_bool == 1
 
@@ -12362,38 +12376,38 @@ r; t=0.00 19:29:22
          |      total   distinct
 ---------+----------------------
  dealnum |      10057      10057
-r; t=0.03 19:29:22
+r; t=0.03 2:43:40
 .         keep if maybe_bool == maybe_run & maybe_bool == 1
 (88,685 observations deleted)
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         distinct dealnum
 
          |        Observations
          |      total   distinct
 ---------+----------------------
  dealnum |      10057      10057
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         * collapse to firm year 
 .                 
 .         g frac_valuedestroy = car_CAPM < 0 if !missing(car_CAPM)        
 (373 missing values generated)
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         collapse (count) ma_count = dealnum (sum) transvalue ///
 >                 (mean) frac_value* car_CAPM, by(gvkey fyear)
-r; t=0.01 19:29:22
+r; t=0.01 2:43:40
 .         count
   4,224
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         g count_valuedestroy       = ma_count*frac_valuedestroy
 (78 missing values generated)
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         * merge to sample 
 .         
-.         merge 1:1 gvkey fyear using "$temp/fy_panel_nobandwidth"
+.         merge 1:1 gvkey fyear using "$temp/fy_panel"
 
     Result                      Number of obs
     -----------------------------------------
@@ -12403,15 +12417,15 @@ r; t=0.00 19:29:22
 
     Matched                             4,224  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:22
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+r; t=0.02 2:43:40
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 19:29:22
+r; t=0.02 2:43:40
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -12441,13 +12455,13 @@ r; t=0.02 19:29:22
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:29:22
+r; t=0.01 2:43:40
 .         
 .         * fill in activity variables as 0 
 .         
@@ -12457,12 +12471,12 @@ r; t=0.01 19:29:22
 (4,699 real changes made)
 (4,699 real changes made)
 (4,777 real changes made)
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         * run some tests 
 .                         
 .         eststo clear
-r; t=0.00 19:29:22
+r; t=0.00 2:43:40
 .         
 .         // logY
 .         foreach v in ma_count count_valuedestroy  {
@@ -12667,7 +12681,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.30 19:29:22
+r; t=0.29 2:43:40
 .         
 .         // booleanY
 .         foreach v in ma_count count_valuedestroy  {
@@ -12872,7 +12886,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.25 19:29:22
+r; t=0.29 2:43:40
 .         
 .         // y 
 .         foreach v in gdwlip_impairment_bool car_CAPM frac_valuedestroy   {
@@ -13169,7 +13183,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  542
-r; t=0.32 19:29:23
+r; t=0.35 2:43:40
 . 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("IA3_raw") ///
@@ -13218,48 +13232,50 @@ MeanY                 0.44         0.24         0.44         0.27         0.06  
 -----------------------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=0.23 19:29:23
+r; t=0.23 2:43:41
 . }       
-r; t=1.71 19:29:23
+r; t=1.69 2:43:41
 
 . ********************************************************************************        
 . * Table IA4: risk taking 
 . ********************************************************************************
-. {
+. 
+. if $using_fake_data == 0 {
+.         
 .         * point here is to look at risk taking, per Ref #2 point abotu mechanism. 
 . 
 .         * idio using beta loading from prior year 
 .         * here we account for exact fiscal dates (not cal year) 
 .         
 .         clear
-r; t=0.00 19:29:23
+r; t=0.00 2:43:41
 .                         
 .         odbc load, exec("SELECT * FROM crsp.dsi WHERE date BETWEEN '1996-01-01' AND '2007-09-01'") dsn("wrds-pgdata-64")
-r; t=6.55 19:29:29
+r; t=6.88 2:43:48
 .         keep date 
-r; t=0.00 19:29:29
+r; t=0.01 2:43:48
 .         rename date datadate 
-r; t=0.00 19:29:29
+r; t=0.00 2:43:48
 .         g trading_date = 1
-r; t=0.00 19:29:29
+r; t=0.00 2:43:48
 .         tempfile trading_dates
-r; t=0.00 19:29:29
+r; t=0.00 2:43:48
 .         save `trading_dates'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002185.tmp saved as .dta format
-r; t=0.00 19:29:29
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002185.tmp saved as .dta format
+r; t=0.00 2:43:48
 .         
 .         * get permnos in main test
 .         
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.01 19:29:29
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.01 2:43:48
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.03 19:29:29
+r; t=0.03 2:43:48
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -13289,13 +13305,13 @@ r; t=0.03 19:29:29
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:29:29
+r; t=0.00 2:43:48
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:29:29
+r; t=0.01 2:43:48
 .                 
 .         reghdfe prof_a Rpt_Comm Rp pt_Comm if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2)       
 >   
@@ -13329,23 +13345,23 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.11 19:29:30
+r; t=0.11 2:43:48
 .         keep if e(sample)
 (4,586 observations deleted)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         
 .         /* get firm-date for filings. adjust it to be trading dates */
 .         
 .         preserve
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         
 .                 // a sledgehammer approach:
 .                 keep lpermno datadate
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 g sample_datadate_raw = datadate // will need this to merge back to our compustat sample 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 format sample_datadate_raw %td
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 merge m:1 datadate using `trading_dates' , keep(1 3)
 (variable datadate was long, now double to accommodate using data's values)
 
@@ -13357,12 +13373,12 @@ r; t=0.00 19:29:30
 
     Matched                             2,916  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:30
+r; t=0.02 2:43:48
 .                 g found_nearest_trading_date = _m == 3
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace datadate = datadate - 1 if !found_nearest_trading_date
 (1,421 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 tab found_nearest_trading_date
 
 found_neare |
@@ -13373,9 +13389,9 @@ st_trading_ |
           1 |      2,916       67.24      100.00
 ------------+-----------------------------------
       Total |      4,337      100.00
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 drop _m
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 
 .                 merge m:1 datadate using `trading_dates' , keep(1 3)
 
@@ -13387,15 +13403,15 @@ r; t=0.00 19:29:30
 
     Matched                             3,509  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:30
+r; t=0.02 2:43:48
 .                 g update = _m ==3 & found_nearest_trading_date == 0 // 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace found_nearest_trading_date = 1 if update == 1
 (593 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace datadate = datadate - 1 if !found_nearest_trading_date
 (828 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 tab found_nearest_trading_date
 
 found_neare |
@@ -13406,9 +13422,9 @@ st_trading_ |
           1 |      3,509       80.91      100.00
 ------------+-----------------------------------
       Total |      4,337      100.00
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 drop _m update
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 
 .                 merge m:1 datadate using `trading_dates' , keep(1 3)
 
@@ -13420,15 +13436,15 @@ r; t=0.00 19:29:30
 
     Matched                             4,298  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:30
+r; t=0.02 2:43:48
 .                 g update = _m ==3 & found_nearest_trading_date == 0 // 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace found_nearest_trading_date = 1 if update == 1
 (789 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace datadate = datadate - 1 if !found_nearest_trading_date
 (39 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 tab found_nearest_trading_date
 
 found_neare |
@@ -13439,9 +13455,9 @@ st_trading_ |
           1 |      4,298       99.10      100.00
 ------------+-----------------------------------
       Total |      4,337      100.00
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 drop _m update
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 
 .                 merge m:1 datadate using `trading_dates' , keep(1 3)
 
@@ -13450,15 +13466,15 @@ r; t=0.00 19:29:30
     Not matched                             0
     Matched                             4,337  (_merge==3)
     -----------------------------------------
-r; t=0.02 19:29:30
+r; t=0.02 2:43:48
 .                 g update = _m ==3 & found_nearest_trading_date == 0 // 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace found_nearest_trading_date = 1 if update == 1
 (39 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 replace datadate = datadate - 1 if !found_nearest_trading_date
 (0 real changes made)
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 tab found_nearest_trading_date
 
 found_neare |
@@ -13468,41 +13484,41 @@ st_trading_ |
           1 |      4,337      100.00      100.00
 ------------+-----------------------------------
       Total |      4,337      100.00
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                         
 .                 keep lpermno datadate sample_datadate_raw
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 rename (lpermno datadate) (permno date)
-r; t=0.00 19:29:30
+r; t=0.01 2:43:48
 .                 tempfile sample_dates
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 save `sample_dates'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002187.tmp saved as .dta format
-r; t=0.00 19:29:30
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002187.tmp saved as .dta format
+r; t=0.00 2:43:48
 .         restore
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         
 .         keep lpermno
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         duplicates drop lpermno, force
 
 Duplicates in terms of lpermno
 
 (3,769 observations deleted)
-r; t=0.01 19:29:30
+r; t=0.01 2:43:48
 .         rename lpermno permno 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         
 .         * permnos for CRSP!
 .         * to download returns from crsp, need a list of permnos
 .                 
 .         qui flevelsof permno, local(myvars) // faster than levelsof
-r; t=0.06 19:29:30
+r; t=0.03 2:43:48
 .         local myvars : subinstr local myvars " " ",", all 
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         di length("`myvars'")
 3407
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .         
 .         * obdc crsp for these permnos 
 .         
@@ -13512,22 +13528,22 @@ r; t=0.00 19:29:30
         |      total   distinct
 --------+----------------------
  permno |        568        568
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                 local n_firms = `r(ndistinct)' // for post-check
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 . 
 .                 * download daily returns + this also grabs delisting codes (irrelevant here due to sample construction)
 . 
 .                 clear
-r; t=0.00 19:29:30
+r; t=0.00 2:43:48
 .                                 
 .                 odbc load, exec("SELECT a.permno, a.date, a.ret, b.vwretd, a.prc, a.shrout, c.dlret, c.dlstcd FROM crsp.dsf a LEFT JOI
 > N crsp.dse c ON a.permno = c.permno AND a.date = c.date LEFT JOIN crsp.dsi b ON a.date = b.date WHERE a.permno IN ( `myvars' ) AND a.d
 > ate BETWEEN '1996-01-01' AND '2007-09-01'") dsn("wrds-pgdata-64")
-r; t=43.92 19:30:14
+r; t=23.84 2:44:12
 .                 
 .                 sort permno date
-r; t=0.25 19:30:14
+r; t=0.23 2:44:12
 . 
 .                 distinct permno
 
@@ -13535,21 +13551,21 @@ r; t=0.25 19:30:14
         |      total   distinct
 --------+----------------------
  permno |    1611628        568
-r; t=0.18 19:30:14
+r; t=0.19 2:44:12
 .                 di "We have return data on " `n_firms' "/" `r(ndistinct)' " firms"
 We have return data on 568/568 firms
-r; t=0.00 19:30:14
+r; t=0.00 2:44:12
 .                 
 .                 replace ret = ret+dlret if !missing(dlret)
 (59 real changes made)
-r; t=0.01 19:30:14
+r; t=0.01 2:44:12
 .                 replace ret = ret - .3 if missing(dlret) & !missing(dlstcd)      // Shumway (1997)
 (0 real changes made)
-r; t=0.01 19:30:14
+r; t=0.01 2:44:12
 .                 drop if missing(ret) // these are the first obs of firm. ie if ipo is Sept 20, first monthly ret is Oct 31 (msf puts r
 > ets at month end)
 (1,285 observations deleted)
-r; t=0.04 19:30:14
+r; t=0.05 2:44:12
 .                 
 .         * fill out the panel with all dates so that our sample dates are definitely avail
 .         
@@ -13558,18 +13574,18 @@ r; t=0.04 19:30:14
 Duplicates in terms of permno date ret
 
 (10,898 observations deleted)
-r; t=2.03 19:30:16
+r; t=2.00 2:44:14
 .         bysort permno date: drop if _N > 1 & missing(dlret) // when dlret is found, the firm-date obs is duplicated (once with and wit
 > hout dlret)                       
 (39 observations deleted)
-r; t=1.46 19:30:18
+r; t=1.46 2:44:16
 .                         
 .         xtset permno date
 
 Panel variable: permno (unbalanced)
  Time variable: date, 02jan1996 to 31aug2007, but with gaps
          Delta: 1 day
-r; t=0.36 19:30:18
+r; t=0.40 2:44:16
 . *tsfill, full
 .         
 .         * get the sample filing dates
@@ -13585,91 +13601,91 @@ r; t=0.36 19:30:18
 
     Matched                             4,336  (_merge==3)
     -----------------------------------------
-r; t=0.19 19:30:18
+r; t=0.20 2:44:16
 .         distinct permno date if _m == 3, j
 
         Observations
       total   distinct
        4336       4336
-r; t=0.72 19:30:19
+r; t=1.07 2:44:17
 .         di "We have tagged filing dates for " `r(ndistinct)' " obs"
 We have tagged filing dates for 4336 obs
-r; t=0.00 19:30:19
+r; t=0.00 2:44:17
 .                         
 .         * estimate capm beta for year t via rangestat   
 .                         
 . *gen low  = cond(_m == 3, date-251*1+1, 1)
 .         gen low  = cond(_m == 3, date-365*1+1, 1)
-r; t=0.02 19:30:19
+r; t=0.02 2:44:17
 .         gen high = cond(_m == 3, date,   0)
-r; t=0.01 19:30:19
+r; t=0.01 2:44:18
 .         
 .         count if low < high // rangestat runs on these regs 
   4,336
-r; t=0.01 19:30:19
+r; t=0.01 2:44:18
 .         
 .         rangestat (reg) ret vwretd, interval(date low high) by(permno)
-r; t=3.82 19:30:23
+r; t=4.18 2:44:22
 .         rename b_vwretd capm_beta_this_year 
-r; t=0.01 19:30:23
+r; t=0.00 2:44:22
 .         order capm_beta_this_year
-r; t=0.03 19:30:23
+r; t=0.03 2:44:22
 .         drop reg_nobs-se_cons
-r; t=0.00 19:30:23
+r; t=0.00 2:44:22
 .         
 .         rangestat (sd) ret, interval(date low high) by(permno)
-r; t=3.07 19:30:26
+r; t=3.30 2:44:25
 .         lab var ret_sd "SD(rawreturns)"
-r; t=0.00 19:30:26
+r; t=0.00 2:44:25
 . 
 .         * estimate capm for year-1 on these dates (so we can use the loadings in year t)
 .         
 .         drop low high
-r; t=0.02 19:30:26
+r; t=0.02 2:44:25
 .         gen low  = cond(_m == 3, date-365*2+1, 1)
-r; t=0.02 19:30:26
+r; t=0.01 2:44:25
 .     gen high = cond(_m == 3, date-365*1,   0)
-r; t=0.01 19:30:26
+r; t=0.02 2:44:25
 .         
 .         count if low < high // rangestat runs on these regs 
   4,336
-r; t=0.01 19:30:26
+r; t=0.01 2:44:25
 .         
 .         rangestat (reg) ret vwretd, interval(date low high) by(permno)
-r; t=3.61 19:30:30
+r; t=3.93 2:44:29
 .                 
 .         preserve 
-r; t=0.07 19:30:30
+r; t=0.07 2:44:29
 .                 keep permno date ret vwretd 
-r; t=0.02 19:30:30
+r; t=0.02 2:44:29
 .                 tempfile lil_crsp
-r; t=0.00 19:30:30
+r; t=0.00 2:44:29
 .                 save `lil_crsp'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_002189.tmp saved as .dta format
-r; t=0.04 19:30:30
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_002189.tmp saved as .dta format
+r; t=0.06 2:44:29
 .         restore 
-r; t=0.03 19:30:30
+r; t=0.03 2:44:29
 .                 
 .         * reduce to filing dates, and for each, build all the dates from the fiscal year
 .         
 .         keep if !missing(b_vwretd) 
 (1,595,097 observations deleted)
-r; t=0.06 19:30:30
+r; t=0.06 2:44:29
 .         keep if reg_nobs >= 100
 (10 observations deleted)
-r; t=0.00 19:30:30
+r; t=0.00 2:44:29
 .         count 
   4,300
-r; t=0.00 19:30:30
+r; t=0.00 2:44:29
 .         keep permno date b_* capm_beta_this_year ret_sd sample_datadate_raw
-r; t=0.00 19:30:30
+r; t=0.00 2:44:29
 .         expand 365
 (1,565,200 observations created)
-r; t=0.02 19:30:30
+r; t=0.02 2:44:29
 .         rename date datadate
-r; t=0.00 19:30:30
+r; t=0.00 2:44:29
 .         bysort permno datadate: g date = datadate + 1 - _n
-r; t=0.30 19:30:30
+r; t=0.32 2:44:30
 .                 
 .         * merge in the return data for that year
 .         
@@ -13684,7 +13700,7 @@ r; t=0.30 19:30:30
 
     Matched                         1,082,223  (_merge==3)
     -----------------------------------------
-r; t=1.24 19:30:32
+r; t=1.35 2:44:31
 .         mdesc
 
     Variable    |     Missing          Total     Percent Missing
@@ -13701,31 +13717,31 @@ r; t=1.24 19:30:32
          vwretd |     487,277      1,569,500          31.05
          _merge |           0      1,569,500           0.00
 ----------------+-----------------------------------------------
-r; t=0.16 19:30:32
+r; t=0.14 2:44:31
 .         
 .         * get capm resid in year t (with beta and alpha from t-1)
 .         
 .         g resid = ret - (b_cons + b_vwretd*vwretd)
 (487,277 missing values generated)
-r; t=0.02 19:30:32
+r; t=0.02 2:44:31
 .                 
 .         * collapse to firm-year 
 .         
 .         drop datadate // this is the nearest trading date at this point, not the filing date
-r; t=0.02 19:30:32
+r; t=0.02 2:44:31
 .         rename sample_datadate_raw datadate
-r; t=0.00 19:30:32
+r; t=0.00 2:44:31
 .         
 .         gcollapse (sd) ret resid (mean) capm_beta_this_year, by(permno datadate)
-r; t=0.43 19:30:33
+r; t=0.68 2:44:32
 .         rename (ret resid) sd_=
-r; t=0.00 19:30:33
+r; t=0.00 2:44:32
 .         
 .         * merge in sample 
 .         
 .         rename permno lpermno
-r; t=0.00 19:30:33
-.         merge 1:1 lpermno datadate using "$temp/fy_panel_nobandwidth", keep(2 3) nogen
+r; t=0.00 2:44:32
+.         merge 1:1 lpermno datadate using "$temp/fy_panel", keep(2 3) nogen
 (variable datadate was float, now double to accommodate using data's values)
 
     Result                      Number of obs
@@ -13736,18 +13752,18 @@ r; t=0.00 19:30:33
 
     Matched                             4,300  
     -----------------------------------------
-r; t=0.04 19:30:33
+r; t=0.05 2:44:32
 .         
 .         * now run main test
 .         
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 19:30:33
+r; t=0.02 2:44:32
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -13777,16 +13793,16 @@ r; t=0.02 19:30:33
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:30:33
+r; t=0.00 2:44:32
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:30:33
+r; t=0.01 2:44:32
 .         
 .         eststo clear
-r; t=0.03 19:30:33
+r; t=0.02 2:44:32
 .         
 .         * run main test to verify sample and outputs
 .         
@@ -13821,23 +13837,23 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.49 19:30:33
+r; t=0.50 2:44:33
 .         sum sd_ret sd_resid if e(sample)
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
       sd_ret |      4,300    .0301429    .0143406   .0073367   .1077784
     sd_resid |      4,300    .0274685    .0132742   .0056688    .103242
-r; t=0.00 19:30:33
+r; t=0.00 2:44:33
 .         
 .         * now run tests:
 . 
 .         global  extra_covariates_noLEV l.l_a  l.capx_a l.xrd_a L.SIZE L.BOARD_IND L.incoming_frac L.outgoing_frac  // we shouldn't con
 > trol for lag leverage in firm FE models with leverage on LHS
-r; t=0.00 19:30:33
+r; t=0.00 2:44:33
 .         
 .         eststo clear
-r; t=0.00 19:30:33
+r; t=0.00 2:44:33
 .         
 .         foreach v in sd_ret capm_beta_this_year sd_resid    {
   2.                 rename `v' Y
@@ -14133,7 +14149,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1511
-r; t=0.48 19:30:34
+r; t=0.37 2:44:33
 .         
 .         foreach v in  td_a td_mve  cash_a {
   2.                 rename `v' Y
@@ -14420,7 +14436,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1521
-r; t=0.36 19:30:34
+r; t=0.36 2:44:33
 .                 
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("IA4_raw") ///
@@ -14469,25 +14485,25 @@ MeanY                 0.03         1.17         0.03         0.19         0.16  
 ----------------------------------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=9.44 19:30:44
+r; t=1.04 2:44:34
 . }
-r; t=80.77 19:30:44
+r; t=53.61 2:44:34
 
 .         
 . *************************************************************************
 . * Table IA5: other Y   
 . *************************************************************************
 . {
-.         use "$temp/fy_panel_nobandwidth", clear 
-r; t=0.00 19:30:44
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         use "$temp/fy_panel", clear 
+r; t=0.00 2:44:34
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.02 19:30:44
+r; t=0.03 2:44:34
 .         define_DDD_vars -5 5 2003 
 
     (mean) |         close
@@ -14517,20 +14533,20 @@ r; t=0.02 19:30:44
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 19:30:44
+r; t=0.00 2:44:34
 .         xtset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 19:30:44
+r; t=0.01 2:44:34
 .         
 .         * std the continuous controls 
 .         local myvarlist l_a td_a  capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac
-r; t=0.00 19:30:44
+r; t=0.00 2:44:34
 .         center `myvarlist', s inplace
 (modified variables: l_a td_a capx_a xrd_a SIZE BOARD_IND incoming_frac outgoing_frac)
-r; t=0.05 19:30:44
+r; t=0.03 2:44:34
 .         sum `myvarlist'
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -14544,10 +14560,10 @@ r; t=0.05 19:30:44
    BOARD_IND |      8,567    1.14e-07           1  -5.380037   1.774248
 incoming_f~c |      8,567    3.77e-09           1  -.7824547    7.81972
 outgoing_f~c |      8,567   -4.00e-08           1  -.7105672   7.971218
-r; t=0.00 19:30:44
+r; t=0.00 2:44:34
 .         
 .         eststo clear    
-r; t=0.00 19:30:44
+r; t=0.00 2:44:34
 .                 
 .         foreach v in l_emp q  {
   2.                 local lab: var lab `v'
@@ -14901,7 +14917,7 @@ added scalar:
 
 added scalar:
              e(t_Comm) =  1388
-r; t=0.43 19:30:44
+r; t=0.47 2:44:35
 .         
 .         esttab_to_excel_sheet using "$excel_filename", ///
 >                 sheet_name("IA5_raw") ///
@@ -14950,14 +14966,14 @@ MeanY                 1.56         1.56         2.24         2.22
 --------------------------------------------------------------------
 t statistics in parentheses
 * p<0.10, ** p<0.05, *** p<0.01
-r; t=2.58 19:30:47
+r; t=0.26 2:44:35
 . }
-r; t=3.19 19:30:47
+r; t=1.21 2:44:36
 
 .                 
 .         log close _all 
       name:  <unnamed>
        log:  C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication\outputs/log_Analysis.log
   log type:  text
- closed on:  20 Jan 2025, 19:30:47
+ closed on:  21 Jan 2025, 02:44:36
 ----------------------------------------------------------------------------------------------------------------------------------------

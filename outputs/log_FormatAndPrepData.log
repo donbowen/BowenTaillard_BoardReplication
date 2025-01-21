@@ -2,7 +2,7 @@
       name:  <unnamed>
        log:  C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication\outputs/log_FormatAndPrepData.log
   log type:  text
- opened on:  20 Jan 2025, 17:45:46
+ opened on:  21 Jan 2025, 00:43:02
 
 . 
 . *************************************************************************
@@ -16,31 +16,31 @@
 .         
 .         * settings
 .         set rmsg on
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         set more off, perm
 (set more preference recorded)
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 . 
 .         set matsize 800
 set matsize ignored.
     Matrix sizes are no longer limited by c(matsize) in modern Statas.  Matrix sizes are now limited by edition of Stata.  See limits
     for more details.
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         set scrollbufsize 500000                
 (set scrollbufsize will take effect the next time you launch Stata)
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         capture program drop _all
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         clear
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         clear matrix
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         
 .         *************************************************************************
@@ -48,70 +48,100 @@ r; t=0.00 17:45:46
 .         * Obtain these files from WRDS
 .         *************************************************************************
 .         
-.         * set input paths for user obtained files         
-.         global ccm_raw            "inputs_noupload/ccm_annual_1960_2012_full"
-r; t=0.00 17:45:46
+.         /* set using_fake_data equal to 0 or 1
+>         
+>            if using_fake_data = 1, then
+>                         the code will skip all data creation steps (LifeCycles, Execucomp, 
+>                         formatting director data, create firm-year panel)
+>                         and skip making Table 1 (which happens when we create firm-year panel)
+>                         and skip exhibits based on WRDS downloads or data files we didn't 
+>                         create (Tables 8, 9, 10, 11, IA1, IA3, IA4 lpus Figues 1 and IA1)
+>                         
+>            if using_fake_data = 0, then
+>                         you must have all of the inputs files obtained, downloaded, and set 
+>                         the paths below to point to the files 
+>         */
+.         global using_fake_data    0          // put 1 or 0 here  
+r; t=0.00 0:43:02
 
-.         global crsp_monthly       "inputs_noupload/crsp_monthly_1960_2011_full"
-r; t=0.00 17:45:46
-
-.         global dir_raw            "inputs_noupload/directors_legacy_all"
-r; t=0.00 17:45:46
-
-.         global execu_raw          "inputs_noupload/execu_1992-2012_full"
-r; t=0.00 17:45:46
-
-.         global completed_mergers  "inputs_noupload/sdc_acq_completed"
-r; t=0.00 17:45:46
+.         assert inlist($using_fake_data, 0,1) // leave as-is 
+r; t=0.00 0:43:02
 
 .         
+.         * set input paths for user obtained files         
+.         global ccm_raw            "inputs_noupload/ccm_annual_1960_2012_full"
+r; t=0.00 0:43:02
+
+.         global crsp_monthly       "inputs_noupload/crsp_monthly_1960_2011_full"
+r; t=0.00 0:43:02
+
+.         global dir_raw            "inputs_noupload/directors_legacy_all"
+r; t=0.00 0:43:02
+
+.         global execu_raw          "inputs_noupload/execu_1992-2012_full"
+r; t=0.00 0:43:02
+
+.         global completed_mergers  "inputs_noupload/sdc_acq_completed"
+r; t=0.00 0:43:02
+
+.                 
 .         *************************************************************************
 .         * END: USERS NEED TO MODIFY THIS, THE REMAINDER OF FILE WILL RUN
 .         *************************************************************************
 .         
 .         * provided inputs 
 .         global new_indep_data     "inputs/new_independence_data"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         global iss_ccm_cusip      "inputs/ISS_cusip6_to_CCM_cusip6.csv"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         global sga_handcollection "inputs/new_SGA_data.xlsx"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         
 .         * set temp folder
 .         global temp               "temp" // inside cd but can be changed elsewhere easily
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         *!rmdir "$temp"  /R /q           // delete entire temp folder and contents for fresh start
 .         cap mkdir "$temp"                // create temp folder if non-existant 
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         
 .         * derived data (board) will go here, with these file names
 .         global board_lvl_out      "$temp/board_level_data"   
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         global dir_lvl_out        "$temp/dir_level_data"     
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
+
+.         
+.         * for users running this code without all licensed data 
+.         if $using_fake_data == 1 {
+.                 copy inputs/psuedo_fy_panel.dta    temp/fy_panel.dta  , replace
+r; t=0.00 0:43:02
+.                 copy inputs/psuedo_cusip_R_t.dta   temp/cusip_R_t.dta , replace
+r; t=0.00 0:43:02
+.         }
+r; t=0.00 0:43:02
 
 .          
 .         * set output paths  
 .         global output_folder      "outputs"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         global excel_filename     "$output_folder/AnalysisOutput.xlsx"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .         cap mkdir "$output_folder"  
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .                 
 .         * any global analysis params 
 .         
 .         global  extra_covariates l.l_a l.td_a l.capx_a l.xrd_a L.SIZE L.BOARD_IND L.incoming_frac L.outgoing_frac
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 .                 
 . *************************************************************************
@@ -120,7 +150,7 @@ r; t=0.00 17:45:46
 . {               
 .         * Winsor program (winsor varname [1,5])
 .         capture program drop winsor
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         program define winsor
   1.                 quiet sum `1', detail
   2.                 replace `1' = r(p1)  if `1' ~= . & (`1' < r(p1))  & `2' == 1
@@ -128,11 +158,11 @@ r; t=0.00 17:45:46
   4.                 replace `1' = r(p5)  if `1' ~= . & (`1' < r(p5))  & `2' == 5
   5.                 replace `1' = r(p95) if `1' ~= . & (`1' > r(p95)) & `2' == 5
   6.         end     
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         
 .         * to make the tables prettier and more informative      
 .         cap prog drop myPostEst
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         prog def myPostEst
   1.                 sum Y if e(sample)
   2.                 estadd scalar meanY `r(mean)'           
@@ -141,13 +171,13 @@ r; t=0.00 17:45:46
   5.                         estadd scalar `v' = `r(N)'
   6.                 }
   7.         end
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         
 .         * this will define DDD vars flexibly 
 .         * (e.g. in case R/t/p definitions need to change)
 .         * e.g. falsification
 .         cap prog drop define_DDD_vars   
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         prog define define_DDD_vars     
   1.                 *example: define_DDD_vars -5 5 2003
 .                 *what the args do:
@@ -176,10 +206,10 @@ r; t=0.00 17:45:46
  14.                 lab var Rt_Comm     "\$ R_i \times NC_{i} \$"             //  "\$ R_i \times NC_{i}^{b|c} \$"
  15.                 lab var Rpt_Comm        "\$ P_t \times R_i \times NC_{i} \$"  //  "\$ R_i \times P_t \times NC_{i}^{b|c} \$"
  16.         end     
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         
 .         cap prog drop esttab_to_excel_sheet
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         prog def esttab_to_excel_sheet
   1.         syntax using, sheet_name(string) esttab_options(string) temp_csv(string) [notes(string)]
   2.         /*
@@ -235,32 +265,32 @@ r; t=0.00 17:45:46
 .                 erase "`temp_csv'" // delete temp file
  19.         }
  20.         end
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 . }       
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 . *************************************************************************
 . * BEGIN: download lifecycle data 
 . *************************************************************************
 .         
 . capture confirm file "inputs/LifeCycles.dta"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
 . if _rc==0 { // make the file only if not made
 .         di "Skipping, already made"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 . }
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 
-. else {
+. else if $using_fake_data == 0 {
 .         cd "inputs"
 C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication\inputs
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 . 
 .         local url "https://faculty.marshall.usc.edu/Gerard-Hoberg/HobergMaxLifeCycles/idata/LifeCycleDatabase.zip"
-r; t=0.00 17:45:46
+r; t=0.00 0:43:02
 .         copy `url' LifeCycleDatabase.zip
-r; t=4.38 17:45:50
+r; t=1.20 0:43:03
 .         unzipfile LifeCycleDatabase.zip
     inflating: LifeCycleDatabase_ext2021.txt
     inflating: Readme_LifeCycleDatabase.txt
@@ -269,13 +299,13 @@ successfully unzipped LifeCycleDatabase.zip to current directory
 total processed:  2
         skipped:  0
       extracted:  2
-r; t=0.13 17:45:50
+r; t=0.15 0:43:03
 . 
 .         insheet using "LifeCycleDatabase_ext2021.txt", clear // this is inside the zip we just extracted 
 (6 vars, 168,604 obs)
-r; t=0.58 17:45:51
+r; t=0.59 0:43:04
 .         rename year datadateyear  
-r; t=0.01 17:45:51
+r; t=0.01 0:43:04
 .         sum
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
@@ -287,23 +317,23 @@ datadateyear |    168,604    2007.365    7.152239       1997       2021
        life3 |    168,604    .2885507    .1472257          0          1
 -------------+---------------------------------------------------------
        life4 |    168,604    .0594849    .0947311          0          1
-r; t=0.01 17:45:51
+r; t=0.01 0:43:04
 .         save "LifeCycles", replace      
 (file LifeCycles.dta not found)
 file LifeCycles.dta saved
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 .         
 .         /* delete the zip files */
 . 
 .         local datafiles: dir "" files "*.zip"
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 . 
 .         foreach datafile of local datafiles {
   2.                 di "`datafile'"
   3.                 rm `datafile'
   4.         }
 lifecycledatabase.zip
-r; t=0.01 17:45:51
+r; t=0.01 0:43:04
 . 
 .         /* delete txt files unless it starts with readme */
 .         
@@ -319,9 +349,9 @@ r; t=0.01 17:45:51
 >         */ 
 .         cd ../
 C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 . }
-r; t=5.13 17:45:51
+r; t=1.97 0:43:04
 
 .         
 . *************************************************************************
@@ -329,27 +359,27 @@ r; t=5.13 17:45:51
 . *************************************************************************
 . 
 . capture confirm file "$temp/gvkey_fyear_ceoinfo.dta"
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 
 . if _rc==0 { // make the file only if not made
 .         di "Skipping, already made"
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 . }
-r; t=0.00 17:45:51
+r; t=0.00 0:43:04
 
-. else {
+. else if $using_fake_data == 0 {
 . **** prep for execumcomp work, we'll want some ccm info
 . 
 .         use gvkey lpermno datadate cusip fyear if fyear > 1993 using "$ccm_raw", clear
-r; t=0.48 17:45:51
+r; t=1.22 0:43:05
 .         
 .         destring gvkey, replace
 gvkey: all characters numeric; replaced as long
-r; t=0.14 17:45:51
+r; t=0.36 0:43:05
 .         rename datadate fye
-r; t=0.00 17:45:51
+r; t=0.00 0:43:05
 .         rename lpermno permno
-r; t=0.00 17:45:51
+r; t=0.00 0:43:05
 . 
 .         **** clean dataset to allow tsset - get rid of multiple obs for gvkey/fyear combo all obs have missing assets anyway 
 .         
@@ -364,7 +394,7 @@ Duplicates in terms of gvkey fyear
         2 |         2586          1293
         3 |           33            22
 --------------------------------------
-r; t=0.10 17:45:51
+r; t=0.28 0:43:05
 .         duplicates report gvkey fyear fye
 
 Duplicates in terms of gvkey fyear fye
@@ -376,24 +406,24 @@ Duplicates in terms of gvkey fyear fye
         2 |         2586          1293
         3 |           33            22
 --------------------------------------
-r; t=0.09 17:45:51
+r; t=0.28 0:43:06
 .         duplicates drop gvkey fyear fye, force // if the fye date is the same, doesn't matter which I keep
 
 Duplicates in terms of gvkey fyear fye
 
 (1,315 observations deleted)
-r; t=0.08 17:45:52
+r; t=0.24 0:43:06
 .         
 .         sort gvkey fyear (fye)
-r; t=0.00 17:45:52
+r; t=0.00 0:43:06
 .         tsset gvkey fyear
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1994 to 2012, but with gaps
          Delta: 1 unit
-r; t=0.04 17:45:52
+r; t=0.09 0:43:06
 .         sort gvkey fyear
-r; t=0.00 17:45:52
+r; t=0.00 0:43:06
 .         
 .    **** identify gvkey'R fiscal year begin date, b/c it is no longer available in CCM
 .    * assume it is one day after last year'R fye date 
@@ -401,13 +431,13 @@ r; t=0.00 17:45:52
 .    
 .         g       fyb     =       L1.fye + 1
 (16,269 missing values generated)
-r; t=0.00 17:45:52
+r; t=0.02 0:43:06
 .         replace fyb     =       fye - 364 if L1.fye==.
 (16,269 real changes made)
-r; t=0.00 17:45:52
+r; t=0.02 0:43:06
 .         
 .         g       dayb = day(fyb) /* make sure that all fyb begin on first day of month */
-r; t=0.00 17:45:52
+r; t=0.00 0:43:06
 .         tab dayb
 
        dayb |      Freq.     Percent        Cum.
@@ -416,51 +446,51 @@ r; t=0.00 17:45:52
           2 |      2,455        1.95      100.00
 ------------+-----------------------------------
       Total |    125,949      100.00
-r; t=0.00 17:45:52
+r; t=0.01 0:43:06
 .         replace fyb =   fyb - 1 if dayb==2      
 (2,455 real changes made)
-r; t=0.00 17:45:52
+r; t=0.01 0:43:06
 .         drop dayb
-r; t=0.00 17:45:52
+r; t=0.00 0:43:06
 .         
 .         tempfile ccm_temp_fmt_for
-r; t=0.00 17:45:52
+r; t=0.00 0:43:06
 .         save `ccm_temp_fmt_for', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000001.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000001.tmp saved as .dta format
-r; t=0.00 17:45:52
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000001.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000001.tmp saved as .dta format
+r; t=0.01 0:43:06
 .         
 . **** execucomp
 .         
 .         use "$execu_raw", clear
-r; t=0.46 17:45:52
+r; t=0.97 0:43:07
 .         
 .         // WILL BE USING THE LATEST CCM AS WELL TO OBTAIN fiscal year end and fiscal year beginning dates
 .         
 .         rename year fyear
-r; t=0.00 17:45:52
+r; t=0.00 0:43:07
 . 
 .         drop cusip-sic
-r; t=0.00 17:45:52
+r; t=0.00 0:43:07
 .         
 .         destring gvkey, replace
 gvkey: all characters numeric; replaced as long
-r; t=0.34 17:45:52
+r; t=0.90 0:43:08
 .         destring execid, replace
 execid: all characters numeric; replaced as long
-r; t=0.32 17:45:53
+r; t=0.80 0:43:09
 . 
 .         keep if (gvkey!=.) & (fyear!=.) & (execid!=.)
 (0 observations deleted)
-r; t=0.01 17:45:53
+r; t=0.05 0:43:09
 .         
 .         sort gvkey fyear        
-r; t=0.01 17:45:53
+r; t=0.01 0:43:09
 .         
 . **** bring in some extra info from CCM 
 . 
 .         sort gvkey fyear co_per_rol
-r; t=0.01 17:45:53
+r; t=0.02 0:43:09
 .         merge m:1 gvkey fyear using `ccm_temp_fmt_for', nogen keep(1 3) 
 
     Result                      Number of obs
@@ -471,12 +501,12 @@ r; t=0.01 17:45:53
 
     Matched                           195,770  
     -----------------------------------------
-r; t=0.05 17:45:53
+r; t=0.10 0:43:09
 .         g       datadate = fye
 (24,103 missing values generated)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:09
 .         label var datadate "CCM/COMPUSTAT Datadate variable"    
-r; t=0.00 17:45:53
+r; t=0.00 0:43:09
 .         
 . *** we want ceo observations... the execucomp FAQ says ceoann is the historical variable of use
 .         
@@ -484,19 +514,19 @@ r; t=0.00 17:45:53
 .         
 .         replace ceoann="1" if ceoann=="CEO"
 (33,607 real changes made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:09
 .         replace ceoann="." if ceoann=="CFO"
 (1 real change made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:09
 .         destring ceoann, replace
 ceoann: all characters numeric; replaced as byte
 (186266 missing values generated)
-r; t=0.29 17:45:53
+r; t=0.31 0:43:09
 .         bysort gvkey fyear: egen test=sum(ceoann)
-r; t=0.04 17:45:53
+r; t=0.07 0:43:09
 .         bysort gvkey fyear: replace test = . if _n > 1
 (182122 real changes made, 182122 to missing)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:09
 .         tab test        
 
        test |      Freq.     Percent        Cum.
@@ -505,59 +535,59 @@ r; t=0.01 17:45:53
           1 |     33,607       89.02      100.00
 ------------+-----------------------------------
       Total |     37,751      100.00
-r; t=0.00 17:45:53
+r; t=0.01 0:43:09
 .         drop test
-r; t=0.00 17:45:53
+r; t=0.00 0:43:09
 .         bysort gvkey fyear: egen miss=sum(ceoann)       
-r; t=0.03 17:45:53
+r; t=0.03 0:43:09
 .         
 .         *** augment with becameceo variable
 .         
 .         gen help1=.
 (219,873 missing values generated)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:09
 .         replace help1 = 1 if becameceo <= fyb & leftofc >= fye /* CEO for full year */
 (47,804 real changes made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:10
 .         replace help1 = 2 if becameceo <= fyb & leftofc >= fyb   & leftofc < fye /* CEO at fyb, but not at fye */
 (2,785 real changes made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:10
 .         replace help1 = 3 if becameceo > fyb  & becameceo <= fye & leftofc >= fye /* CEO at fye, but start after fyb */
 (3,221 real changes made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:10
 .         replace help1 = 4 if becameceo > fyb  & becameceo <= fye & leftofc < fye /* start after fyb, going before fye */
 (176 real changes made)
-r; t=0.01 17:45:53
+r; t=0.01 0:43:10
 .         
 .         * pick one alternative CEO in firm-years without designated ceoann 
 .         
 .         gen help2=. // length of days as ceo
 (219,873 missing values generated)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:10
 .         replace help2=fye-fyb if help1==1
 (27,938 real changes made)
-r; t=0.00 17:45:53
+r; t=0.01 0:43:10
 .         replace help2=leftofc-fyb if help1==2
 (2,785 real changes made)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:10
 .         replace help2=fye-becameceo if help1==3
 (3,221 real changes made)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:10
 .         replace help2=leftofc-becameceo if help1==4
 (176 real changes made)
-r; t=0.00 17:45:53
+r; t=0.00 0:43:10
 .         bysort gvkey fyear (help2): egen help3=rank(help2), field // help3 is a ranking of help2 for firm-year, might be multiple that
 >  are coded as 1
 (185,753 missing values generated)
-r; t=0.17 17:45:53
+r; t=0.25 0:43:10
 .         replace ceoann=1 if help3==1 & miss==0  
 (1,690 real changes made)
-r; t=0.03 17:45:53
+r; t=0.03 0:43:10
 .         
 .         * break ties of co-CEOs: rank by tdc1, tdc2, co_per_rol - take the highest one
 .         
 .         bysort gvkey fyear: egen test=sum(ceoann)
-r; t=0.04 17:45:53
+r; t=0.04 0:43:10
 .         tab test // 85 years with multiple CEOs
 
        test |      Freq.     Percent        Cum.
@@ -567,15 +597,15 @@ r; t=0.04 17:45:53
           2 |         85        0.04      100.00
 ------------+-----------------------------------
       Total |    219,873      100.00
-r; t=0.01 17:45:53
+r; t=0.01 0:43:10
 .         bysort gvkey fyear (tdc1 tdc2 co_per_rol): egen help4=seq() if test==2 & ceoann==1 & miss==0
 (219,843 missing values generated)
-r; t=0.25 17:45:54
+r; t=0.27 0:43:10
 .         replace ceoann=. if help4==1 // help 4 = 2 is the person with higher salary
 (15 real changes made, 15 to missing)
-r; t=0.01 17:45:54
+r; t=0.01 0:43:10
 .         bysort gvkey fyear: egen test2=sum(ceoann)
-r; t=0.04 17:45:54
+r; t=0.04 0:43:10
 .         tab test2
 
       test2 |      Freq.     Percent        Cum.
@@ -584,16 +614,16 @@ r; t=0.04 17:45:54
           1 |    208,042       94.62      100.00
 ------------+-----------------------------------
       Total |    219,873      100.00
-r; t=0.01 17:45:54
+r; t=0.01 0:43:10
 .         drop help* test* miss
-r; t=0.00 17:45:54
+r; t=0.00 0:43:10
 .                 
 . **** prep to output
 . 
 .         order gvkey fyear execid
-r; t=0.10 17:45:54
+r; t=0.10 0:43:10
 .         sort gvkey fyear execid
-r; t=0.05 17:45:54
+r; t=0.05 0:43:10
 .         
 .         duplicates report gvkey fyear
 
@@ -618,7 +648,7 @@ Duplicates in terms of gvkey fyear
        14 |           42            39
        15 |           45            42
 --------------------------------------
-r; t=0.29 17:45:54
+r; t=0.36 0:43:11
 .         duplicates report  gvkey fyear execid
 
 Duplicates in terms of gvkey fyear execid
@@ -628,12 +658,12 @@ Duplicates in terms of gvkey fyear execid
 ----------+---------------------------
         1 |       219873             0
 --------------------------------------
-r; t=0.16 17:45:54
+r; t=0.22 0:43:11
 .            
 .         ******************** ONLY SAVE CEO INFO ***************
 .         keep if ceoann==1 
 (184,591 observations deleted)
-r; t=0.02 17:45:54
+r; t=0.03 0:43:11
 .         duplicates report  gvkey fyear  
 
 Duplicates in terms of gvkey fyear
@@ -643,30 +673,30 @@ Duplicates in terms of gvkey fyear
 ----------+---------------------------
         1 |        35282             0
 --------------------------------------
-r; t=0.03 17:45:54
+r; t=0.04 0:43:11
 .         sort gvkey fyear
-r; t=0.00 17:45:54
+r; t=0.00 0:43:11
 .         save "$temp/gvkey_fyear_ceoinfo", replace       
 (file temp/gvkey_fyear_ceoinfo.dta not found)
 file temp/gvkey_fyear_ceoinfo.dta saved
-r; t=0.03 17:45:54
+r; t=0.03 0:43:11
 . }
-r; t=3.77 17:45:54
+r; t=7.47 0:43:11
 
 . *************************************************************************
 . * BEGIN: create board and dir level data > $board_lvl_out
 . *************************************************************************
 . 
 . capture confirm file "$board_lvl_out.dta"
-r; t=0.00 17:45:54
+r; t=0.00 0:43:11
 
 . if _rc==0 { // make the file only if not made
 .         di "Skipping, already made"
-r; t=0.00 17:45:54
+r; t=0.00 0:43:11
 . }
-r; t=0.00 17:45:54
+r; t=0.00 0:43:11
 
-. else {  
+. else if $using_fake_data == 0 {
 .         do format_ISS_director_data.do 
 
 . ************************************************************************
@@ -681,9 +711,11 @@ r; t=0.00 17:45:54
 . *                       Cleans some problems with variables.
 . *                       Creates some variables.
 . *
-. *   Input:
+. *   Inputs:
 . *                       directors_legacy_all.dta <-- From riskmetrics, via WRDS. 
 . *                       The entire database, for all firms and years. 
+. *
+. *                       new_independence_data.dta <-- provided in this repo
 . *
 . *   Outputs:
 . *                       dir_level_data.dta 
@@ -691,17 +723,10 @@ r; t=0.00 17:45:54
 . *
 . *                       variables named with ALL_CAPS are firm-year variables. 
 . *
-. /*      Outline
-> 
->         This code proceeds in two parts:
->         PART 1: FORMAT THE ISS DATA - generic code used across multiple projects 
->         PART 2: Incorporate new and precise data on director indep collected for 
->                 Bowen and Taillard (2025)
-> 
-> */
 . /*      Other notes:
 > 
->         Be careful when merging on cusip6. ISS and CCM cusip6 need not be the same. 
+>         Be careful when merging on cusip6 to other datasets. ISS and CCM cusip6 
+>         need not be the same. 
 >                                 
 >         Not all firm years have CEOs on the BOD, naturally, but some from 1999-2006 
 >         don't have chairs of the BOD! (in the data)
@@ -805,121 +830,121 @@ r; t=0.00 17:45:54
 . {
 . 
 .         use "$dir_raw", clear
-r; t=0.20 17:45:55
+r; t=0.24 0:43:11
 .         
 . *** Meeting date
 . 
 .         format year %ty
-r; t=0.00 17:45:55
+r; t=0.00 0:43:11
 .         format meetingdate %tdDD/NN/CCYY
-r; t=0.00 17:45:55
+r; t=0.00 0:43:11
 . 
 .         /* manual changes to proxy dates, because additional proxies or early/late proxies cause 2 obs per cusip-year */
 . 
 .         sort cusip year meeting
-r; t=0.04 17:45:55
+r; t=0.04 0:43:11
 .         by cusip year: g diffmeeting = 1 if meeting[_n-1] != meeting[_n] & _n > 1
 (166,352 missing values generated)
-r; t=0.00 17:45:55
+r; t=0.00 0:43:11
 .         by cusip year: egen prob = sum(diffmeeting)
-r; t=0.03 17:45:55
+r; t=0.06 0:43:11
 .         gsort -prob cusip year meeting
-r; t=0.23 17:45:55
+r; t=0.33 0:43:12
 .         count if diffmeeting == 1       
   23
-r; t=0.00 17:45:55
+r; t=0.00 0:43:12
 .         
 .         drop                            if cusip == "00204C" & meetingdate == td(03/06/1998) // second obs within 3 months; keep first
 >  one - typical proxy date 
 (9 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.04 0:43:12
 .         drop                            if cusip == "030954" & meetingdate == td(01/07/1997 ) // two obs within 3 months; keep second 
 > one - typical proxy date 
 (13 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.05 0:43:12
 .         drop                            if cusip == "089159" & meetingdate == td(23/11/1999) // two obs within 3 months; this one has 
 > less information
 (6 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         drop                            if cusip == "313135" & meetingdate == td(11/03/1997 ) // other date is consistent with laer me
 > eting dates
 (9 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         drop                            if cusip == "268039" & meetingdate == td(16/10/1997 ) // other date is consistent with laer me
 > eting dates
 (13 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         drop                            if cusip == "31787A" & meetingdate == td(19/06/2001 ) // only one year for this firm, meetings
 >  5 monhs apart, keep later date
 (7 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         drop                            if cusip == "247357" & meetingdate == 15146 // second obs for that year an additional filing t
 > owards end of fiscal year 
 (6 observations deleted)
-r; t=0.02 17:45:55
+r; t=0.02 0:43:12
 .         replace year = 2001 if cusip == "247357" & meetingdate == 14973 // proxy was filed early - fell into earlier calendar year 
 (6 real changes made)
-r; t=0.01 17:45:55
+r; t=0.00 0:43:12
 .         drop                            if cusip == "269246" & meetingdate == 14312 // first obs comes before fyb - change in fye 
 (8 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         drop                            if cusip == "291525" & meetingdate == 14985 // first obs comes before fyb - late filing for pr
 > evious year? 
 (8 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.05 0:43:12
 .         drop                            if cusip == "448407" & meetingdate == 15818 // second obs within 3 months; keep first one - ty
 > pical proxy date 
 (1 observation deleted)
-r; t=0.03 17:45:55
+r; t=0.04 0:43:12
 .         replace year = 1998 if cusip == "461202" & meetingdate == 14259 // one proxy was filed late - fell into later calendar year 
 (7 real changes made)
-r; t=0.01 17:45:55
+r; t=0.00 0:43:12
 .         replace year = 1997 if cusip == "461202" & meetingdate == td(25/11/1996) // proxy was filed early - fell into earlier calendar
 >  year 
 (6 real changes made)
-r; t=0.00 17:45:55
+r; t=0.00 0:43:12
 .         drop                            if cusip == "461202" & meetingdate == td(16/01/1998) // filed 1 day after another, less variab
 > le info
 (6 observations deleted)
-r; t=0.02 17:45:55
+r; t=0.04 0:43:12
 .         drop                            if cusip == "595112" & meetingdate == 14627 // change in fiscal year? - keep later filing as i
 > t is consistent with CCM and later years 
 (7 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.06 0:43:12
 .         drop                            if cusip == "595112" & meetingdate == td(29/01/1996) // keep later filing as it is consistent 
 > with CCM and later years 
 (10 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.04 0:43:12
 .         drop                            if cusip == "591695" & meetingdate == td(10/07/1997) // second obs within 3 months; keep first
 >  one - typical proxy date 
 (9 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.03 0:43:12
 .         replace year = 2001 if cusip == "637657" & meetingdate == 14965 // one proxy was filed early - fell into earlier calendar year
 >  
 (12 real changes made)
-r; t=0.00 17:45:55
+r; t=0.00 0:43:12
 .         replace year = 1998 if cusip == "668367" & meetingdate == td(17/12/1997) // one proxy was filed early - this firm's years are 
 > 1 ahead
 (10 real changes made)
-r; t=0.00 17:45:55
+r; t=0.01 0:43:12
 .         replace year = 1997 if cusip == "682680" & meetingdate == td(12/12/1996) // one proxy was filed early - this firm's years are 
 > 1 ahead
 (14 real changes made)
-r; t=0.00 17:45:55
+r; t=0.01 0:43:12
 .         drop                            if cusip == "867910" & meetingdate == td(30/04/1996) // other was consistent mnth
 (8 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.05 0:43:12
 .         drop                            if cusip == "929903" & meetingdate == 15187 // second obs within 3 months; keep first one - ty
 > pical proxy date 
 (14 observations deleted)
-r; t=0.03 17:45:55
+r; t=0.05 0:43:12
 .         replace year = 1998 if cusip == "918914" & meetingdate == td(03/10/1997 ) // one proxy was filed early - this firm's years are
 >  1 ahead
 (3 real changes made)
-r; t=0.01 17:45:55
+r; t=0.00 0:43:12
 .                         
 .         drop diffmeet prob
-r; t=0.00 17:45:55
+r; t=0.00 0:43:12
 .         
 . *** audit committee chair must be on the audit committee
 .         
@@ -934,10 +959,10 @@ r; t=0.00 17:45:55
          . |    10,606      6,426     30,437 |    47,469 
 -----------+---------------------------------+----------
      Total |    86,102     49,702     30,437 |   166,241 
-r; t=0.02 17:45:56
+r; t=0.03 0:43:12
 .         replace audit_mem = 1   if audit_chair == 1 
 (2,644 real changes made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:12
 .         
 . *** compensation committee chair must be on the compensation committee
 .         
@@ -953,10 +978,10 @@ Compensati |
          . |    10,799      6,233     30,437 |    47,469 
 -----------+---------------------------------+----------
      Total |    88,005     47,799     30,437 |   166,241 
-r; t=0.01 17:45:56
+r; t=0.03 0:43:12
 .         replace comp_mem = 1    if comp_chair == 1
 (2,619 real changes made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:12
 .         
 . *** compensation committee chair must be on the compensation committee
 .         
@@ -971,10 +996,10 @@ Nominating |         0          1          . |     Total
          . |    57,338     27,758     30,437 |   115,533 
 -----------+---------------------------------+----------
      Total |    95,306     40,498     30,437 |   166,241 
-r; t=0.01 17:45:56
+r; t=0.02 0:43:12
 .         replace nom_mem = 1     if nomchair == 1
 (4 real changes made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:12
 .         
 . *** others
 .         
@@ -1067,10 +1092,10 @@ r; t=0.00 17:45:56
          99 |          1        0.00      100.00
 ------------+-----------------------------------
       Total |    166,211      100.00
-r; t=0.01 17:45:56
+r; t=0.02 0:43:13
 .         replace age = . if age < 20
 (22 real changes made, 22 to missing)
-r; t=0.01 17:45:56
+r; t=0.00 0:43:13
 .         
 .         tab year_of_termination, m
 
@@ -1122,13 +1147,13 @@ termination |      Freq.     Percent        Cum.
           . |    157,943       95.01      100.00
 ------------+-----------------------------------
       Total |    166,241      100.00
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         replace year_of_term    = 1999  if year_of_termination == 99
 (1 real change made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         replace year_of_term    = 1993  if year_of_termination == 93    
 (2 real changes made)
-r; t=0.00 17:45:56
+r; t=0.01 0:43:13
 . 
 .         tab dirsince, m
 
@@ -1209,10 +1234,10 @@ r; t=0.00 17:45:56
           . |     30,555       18.38      100.00
 ------------+-----------------------------------
       Total |    166,241      100.00
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         replace dirsince = .    if dirsince < 1910 // 1 is 1905 and 23 are 0.
 (24 real changes made, 24 to missing)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 . 
 .         tab  grandfath, m
 
@@ -1230,10 +1255,10 @@ retire/tenu |
           . |     71,222       42.84      100.00
 ------------+-----------------------------------
       Total |    166,241      100.00
-r; t=0.00 17:45:56
+r; t=0.01 0:43:13
 .         replace grandfath = 1 if grandfath == 2 
 (1 real change made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         
 .         tab pcnt_ctrl_votingpower, m
 
@@ -2544,10 +2569,10 @@ r; t=0.00 17:45:56
           . |     48,461       29.15      100.00
 ------------+-----------------------------------
       Total |    166,241      100.00
-r; t=0.03 17:45:56
+r; t=0.03 0:43:13
 .         replace pcnt_ctrl_votingpower = 0       if pcnt_ctrl_votingpower == 8190
 (1 real change made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 . 
 .         tab insthold
 
@@ -3438,10 +3463,10 @@ al Holdings |      Freq.     Percent        Cum.
    1.61e+07 |         10        0.02      100.00
 ------------+-----------------------------------
       Total |     50,708      100.00
-r; t=0.04 17:45:56
+r; t=0.06 0:43:13
 .         replace insthold = .    if insthold > 100
 (16 real changes made, 16 to missing)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         
 .         tab class
 
@@ -3459,20 +3484,20 @@ I-Independe |
           L |     24,949       15.01      100.00
 ------------+-----------------------------------
       Total |    166,225      100.00
-r; t=0.02 17:45:56
+r; t=0.02 0:43:13
 .         replace class = "I" if class == "#"  // manually checked, this director was independent
 (1 real change made)
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 . 
 .         *** I spend time and check in the data for different firms within cusip/year ...... 
 .         * how many cusips year obs have multiple names? These two fixes are necessary:
 . 
 .         replace name = "PCOM" if cusip == "693262"
 (20 real changes made)
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         replace cusip = "999999" if ticker == "USW"
 (43 real changes made)
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         
 .         tab outside_public_boards
 
@@ -3495,21 +3520,21 @@ r; t=0.01 17:45:56
          43 |          1        0.00      100.00
 ------------+-----------------------------------
       Total |    135,733      100.00
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         replace  outside_public_boards = 4 if  outside_public_boards == 43 // he has other observations in that year at 4, 4, 3
 (1 real change made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 . 
 . *** variable formats
 . 
 .         format year %ty
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         
 .         format female  attend_less75_pct -   designated ///
 >                 employment_ceo - gov_comm_mem  interlocking  /// 
 >                 nomchair- nonempchr  other  otherlink  ownless1  prof_services_yn ///
 >                 relative_yn %1.0f
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .                 
 . *** Director Identification. We need to have a consistent director ID variable.
 .         
@@ -3518,16 +3543,16 @@ r; t=0.00 17:45:56
 > _id seems to uniquely identify every observation. We'll use this insight.   */
 .         
 .         sort legacy_dir year  director_detail_id
-r; t=0.05 17:45:56
+r; t=0.03 0:43:13
 .         
 .         g       dir_id = legacy_d
 (4,631 missing values generated)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         qui sum dir_id
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         replace dir_id = `r(max)' + director_d if dir_id == . // prevents ascribing new dir_id's to currently existing ones
 (4,631 real changes made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .                 
 .         /* This half fixes the problem. dir_id cusip year still has duplicates. This is not
 >         from duplicate directors (i.e. the names are different). This is because some of 
@@ -3537,27 +3562,27 @@ r; t=0.00 17:45:56
 .         duplicates tag cusip dir_id year, gen(tag)
 
 Duplicates in terms of cusip dir_id year
-r; t=0.15 17:45:56
+r; t=0.14 0:43:13
 .         replace tag = . if tag == 0
 (165,829 real changes made, 165,829 to missing)
-r; t=0.01 17:45:56
+r; t=0.01 0:43:13
 .         sort tag full
-r; t=0.06 17:45:56
+r; t=0.05 0:43:13
 .         egen name_id = group(full) if tag != .
 (165,829 missing values generated)
-r; t=0.13 17:45:56
+r; t=0.16 0:43:13
 .         qui sum dir_id
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         replace dir_id = `r(max)' + name_id if tag != .
 (412 real changes made)
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         drop tag
-r; t=0.00 17:45:56
+r; t=0.00 0:43:13
 .         
 .         *** Drop duplicate directorships
 .         
 .         sort cusip year full
-r; t=0.05 17:45:56
+r; t=0.05 0:43:13
 .         duplicates report *
 
 Duplicates in terms of year legacy_pps_id rt_id director_detail_id legacy_director_id ticker cusip name meetingdate first_name last_name
@@ -3575,7 +3600,7 @@ Duplicates in terms of year legacy_pps_id rt_id director_detail_id legacy_direct
         1 |       166201             0
         2 |           40            20
 --------------------------------------
-r; t=0.32 17:45:57
+r; t=0.37 0:43:14
 .         duplicates drop *, force
 
 Duplicates in terms of year legacy_pps_id rt_id director_detail_id legacy_director_id ticker cusip name meetingdate first_name last_name
@@ -3588,10 +3613,10 @@ Duplicates in terms of year legacy_pps_id rt_id director_detail_id legacy_direct
     pcnt_ctrl_votingpower priorserv prof_services_yn relative_yn subs votecref voting year_of_termination year_term_ends dir_id name_id
 
 (20 observations deleted)
-r; t=0.38 17:45:57
+r; t=0.50 0:43:14
 .         
 .         sort legacy_pps_id
-r; t=0.02 17:45:57
+r; t=0.02 0:43:14
 .         duplicates report cusip year full
 
 Duplicates in terms of cusip year fullname
@@ -3602,30 +3627,30 @@ Duplicates in terms of cusip year fullname
         1 |       166199             0
         2 |           22            11
 --------------------------------------
-r; t=0.27 17:45:57
+r; t=0.35 0:43:14
 .         duplicates tag cusip year full, gen(tag)
 
 Duplicates in terms of cusip year fullname
-r; t=0.11 17:45:57
+r; t=0.17 0:43:15
 .         gsort -tag cusip year full
-r; t=0.33 17:45:58
+r; t=0.39 0:43:15
 . 
 .         drop if fullname == "BUCK A MICKEL" & age == 71 // one observation is duplicated with a bad name
 (4 observations deleted)
-r; t=0.03 17:45:58
+r; t=0.05 0:43:15
 . 
 .         * the rest of the dups are because 2 firms-years are duplicated with legacy_pps_id duplicated
 .         * keep the lower valued legacy_pps, which in both cases is consistent with other years for each firm
 .         
 .         egen dropgroup = group(tag  legacy_director_id cusip) if tag == 1
 (166,196 missing values generated)
-r; t=0.13 17:45:58
+r; t=0.15 0:43:15
 .         bysort dropgroup (legacy_pps_id): drop if _n > 1 & tag == 1
 (10 observations deleted)
-r; t=0.08 17:45:58
+r; t=0.07 0:43:15
 .         
 .         drop tag dropg // cleanup 
-r; t=0.00 17:45:58
+r; t=0.00 0:43:15
 .         
 . *** Fill in missing info (over time and due to inconsistent board meeting info)
 .         
@@ -3641,34 +3666,34 @@ r; t=0.00 17:45:58
 .         * first, we need a firm/director pairing id (to tsfill on)
 .         
 .         egen dir_firm_id = group(dir_id cusip)  
-r; t=0.12 17:45:58
+r; t=0.12 0:43:15
 .         order year cusip dir_id dir_firm_id
-r; t=0.05 17:45:58
+r; t=0.06 0:43:15
 .                 
 .         * tsset the panel based on the firm-dir pairings and time
 .         
 .         sort dir_firm_id year
-r; t=0.04 17:45:58
+r; t=0.03 0:43:15
 .         tsset dir_firm_id year
 
 Panel variable: dir_firm_id (unbalanced)
  Time variable: year, 1996 to 2006, but with gaps
          Delta: 1 year
-r; t=0.08 17:45:58
+r; t=0.10 0:43:16
 .         tsfill                                  // add obs 
-r; t=0.11 17:45:58
+r; t=0.12 0:43:16
 .         
 .         *** fill forward "fixed" director traits
 .         
 .         g newobs = 1 if cusip ==""
 (166,207 missing values generated)
-r; t=0.00 17:45:58
+r; t=0.00 0:43:16
 .         count if newobs == 1                            // 2112 new observations
   2,112
-r; t=0.00 17:45:58
+r; t=0.00 0:43:16
 .         
 .         order  year dir_firm_id meetingdate female indexname
-r; t=0.02 17:45:58
+r; t=0.02 0:43:16
 .         
 .         bysort dir_firm_id (year): carryforward cusip - classification  ///
 >                 designated dirsince female grandfath insthold outside_public_boards ///
@@ -3697,14 +3722,14 @@ priorserv:  (1446 real changes made)
 relative_yn:  (2112 real changes made)
 former_employee_yn:  (2112 real changes made)
 year_of_termination:  (95 real changes made)
-r; t=0.51 17:45:59
+r; t=0.61 0:43:16
 .         
 .         *** smartly filling forward for board positions/committees 
 .         * (only fill in if the prior and next observation agree)
 .         
 .         local varfill audit_chair - comp_membership  employment_ceo - employment_vp  gov_comm_mem interlocking nomchair - nonempchr ot
 > herlink num_of_shares ownless1 pcnt_ctrl_votingpower prof_services_yn voting year_of_termination year_term_ends
-r; t=0.00 17:45:59
+r; t=0.00 0:43:16
 .         foreach x of varlist `varfill' {
   2.                 bysort dir_firm_id (year): replace `x' = `x'[_n-1] ///
 >                         if `x'[_n-1] == `x'[_n+1] & newobs == 1         
@@ -3740,7 +3765,7 @@ r; t=0.00 17:45:59
 (0 real changes made)
 (0 real changes made)
 (101 real changes made)
-r; t=0.13 17:45:59
+r; t=0.19 0:43:17
 .         
 .         *** fill forward incrementing variables (age)
 .          
@@ -3758,9 +3783,9 @@ r; t=0.13 17:45:59
 (0 real changes made)
 (0 real changes made)
 (0 real changes made)
-r; t=0.04 17:45:59
+r; t=0.06 0:43:17
 . }       
-r; t=4.51 17:45:59
+r; t=5.54 0:43:17
 
 . *************************************************************************
 . * BEGIN: Create director level variables 
@@ -3770,11 +3795,11 @@ r; t=4.51 17:45:59
 . *** Committee sizes
 .         
 .         bysort cusip year: egen SIZE_COMP = sum(comp_mem)
-r; t=0.06 17:45:59
+r; t=0.07 0:43:17
 .         bysort cusip year: egen SIZE_NOM = sum(nom_membership )
-r; t=0.02 17:45:59
+r; t=0.03 0:43:17
 .         bysort cusip year: egen SIZE_AUDIT = sum(audit_membership)
-r; t=0.02 17:45:59
+r; t=0.05 0:43:17
 .         
 . *** Director Classification
 . 
@@ -3782,94 +3807,94 @@ r; t=0.02 17:45:59
 . 
 .         g dirtype = .
 (168,319 missing values generated)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         replace dirtype = 1 if class == "I"
 (108,891 real changes made)
-r; t=0.00 17:45:59
+r; t=0.01 0:43:17
 .         replace dirtype = 2 if class == "L"
 (25,320 real changes made)
-r; t=0.00 17:45:59
+r; t=0.01 0:43:17
 .         replace dirtype = 3 if class == "E"
 (34,078 real changes made)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         *** Alternative definitions of dirtype, from Guthrie Sokolowsky Wan
 .         
 .         gen help1 = (former_emp==1 | business_transa==1 | prof_ser==1 | designated==1 | charity==1 | otherlink==1 | relative==1 | inte
 > rlock==1) 
-r; t=0.01 17:45:59
+r; t=0.01 0:43:17
 .         gen help2 = (                business_transa==1 | prof_ser==1 | designated==1 | charity==1 | otherlink==1 | relative==1 | inte
 > rlock==1) 
-r; t=0.01 17:45:59
+r; t=0.01 0:43:17
 .         gen help3 = (                business_transa==1 | prof_ser==1 | designated==1 | charity==1 | otherlink==1)                    
 >           
-r; t=0.01 17:45:59
+r; t=0.01 0:43:17
 .         gen help4 = (                                                                                               relative==1 | inte
 > rlock==1) 
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         * reclassify all former employees, but with different stringency 
 .         
 .         gen diff = year - year_of_termination 
 (159,928 missing values generated)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         gen dirtype1            = dirtype 
 (30 missing values generated)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         replace dirtype1        = 1 if dirtype1==2 & diff>=3 & diff!=. & help2==0 // most stringent - only reclassify former employees
 >  
 (3,945 real changes made)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         gen dirtype2            = dirtype1
 (30 missing values generated)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         replace dirtype2        = 1 if dirtype2==2 & help3==1 & help4==0          // least stringent - reclassify all help3-disqualifi
 > ers 
 (15,484 real changes made)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         drop help*
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 . 
 .         *** Alternative definitions of dirtype, from CG response to GSW
 .         
 .         gen dirtype3            = 1 if (dirtype==1 | dirtype==2) & (relative!=1) & (diff>=3)
 (38,744 missing values generated)
-r; t=0.00 17:45:59
+r; t=0.01 0:43:17
 .         replace dirtype3        = 3 if (dirtype==3 | relative==1 | diff<3)      
 (38,714 real changes made)
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         label variable dirtype  `"From IRRC"'
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         label variable dirtype1 `"L to I if 3 yrs only if former emp, not other links"'
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         label variable dirtype2 `"L to I if 3 yrs as long as not relative or interlocked"'
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         label variable dirtype3 `"I if IRRC says I or L, not relative, 3 or more since emp"'
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .                         
 . *** director-lvl vars capturing restructing (hire, reclass, lastyear)
 .         
 .         *** We need these two vars
 .         
 .         sort cusip
-r; t=0.01 17:45:59
+r; t=0.02 0:43:17
 .         by cusip: egen firstfirmyear = min(year)
-r; t=0.03 17:45:59
+r; t=0.06 0:43:17
 .         by cusip: egen lastfirmyear = max(year)
-r; t=0.03 17:45:59
+r; t=0.05 0:43:17
 .         
 .         sort cusip dir_id year
-r; t=0.04 17:45:59
+r; t=0.04 0:43:17
 .         by cusip dir_id: egen firstdirfirmyear = min(year)
-r; t=0.04 17:45:59
+r; t=0.04 0:43:17
 .         by cusip dir_id: egen lastdirfirmyear = max(year)
-r; t=0.03 17:45:59
+r; t=0.06 0:43:17
 .         
 .         rename dirtype dirtype0
-r; t=0.00 17:45:59
+r; t=0.00 0:43:17
 .         
 .         *** vars at the director level (for each of the different indep defs)
 .         
@@ -3930,7 +3955,7 @@ r; t=0.00 17:45:59
 (153,963 missing values generated)
 (153,964 missing values generated)
 (153,964 missing values generated)
-r; t=0.11 17:45:59
+r; t=0.21 0:43:17
 .         
 . *** board-lvl vars capturing restructing (hire, reclass, lastyear), whose names are CAPITALIZED
 .                 
@@ -3951,43 +3976,43 @@ r; t=0.11 17:45:59
  12.                 g       ADD_NOT`i'              = SWITCHTO_NOT`i' + HIRE_NOT`i' 
  13.                 
 .         }
-r; t=1.07 17:46:00
+r; t=1.54 0:43:19
 .         
 . *** check to ensure that each cusip-year is indeed one firm (using ticker and firm name)
 .         
 .         sort cusip year
-r; t=0.00 17:46:00
+r; t=0.01 0:43:19
 .         by cusip year: g temp = 1 if  ticker !=  ticker[_n-1] & _n > 1 & name  !=  name[_n-1] // check on ticker and name to reduce fa
 > lse positives
 (168,259 missing values generated)
-r; t=0.01 17:46:00
+r; t=0.01 0:43:19
 .         by cusip: egen sumdiff = sum(temp)
-r; t=0.03 17:46:01
+r; t=0.03 0:43:19
 .         
 .         replace sumdi = . if sumdi == 0
 (166,392 real changes made, 166,392 to missing)
-r; t=0.00 17:46:01
+r; t=0.00 0:43:19
 .         sum sumdi temp
 
     Variable |        Obs        Mean    Std. dev.       Min        Max
 -------------+---------------------------------------------------------
      sumdiff |      1,927    3.252206    1.725357          1          6
         temp |         60           1           0          1          1
-r; t=0.00 17:46:01
+r; t=0.01 0:43:19
 .         keep if sumdi == .
 (1,927 observations deleted)
-r; t=0.03 17:46:01
+r; t=0.03 0:43:19
 .         drop temp sumdi
-r; t=0.00 17:46:01
+r; t=0.00 0:43:19
 .                 
 . *** adjust variable names to match other datasets 
 .         
 .         rename cusip cusip6
-r; t=0.00 17:46:01
+r; t=0.00 0:43:19
 .         rename year fyear
-r; t=0.00 17:46:01
+r; t=0.00 0:43:19
 . }       
-r; t=1.58 17:46:01
+r; t=2.37 0:43:19
 
 . ********************************************************************************
 . * bring in new independence data, to match exchange dir. classifications 
@@ -3995,7 +4020,7 @@ r; t=1.58 17:46:01
 . ********************************************************************************
 . {
 .         sort cusip6 fyear dir_id  
-r; t=0.05 17:46:01
+r; t=0.05 0:43:19
 .         merge 1:1 cusip6 fyear dir_id  using  "$new_indep_data", nogen
 (variable cusip6 was str6, now str8 to accommodate using data's values)
 (variable dir_id was float, now double to accommodate using data's values)
@@ -4008,26 +4033,26 @@ r; t=0.05 17:46:01
 
     Matched                           166,392  
     -----------------------------------------
-r; t=0.14 17:46:01
+r; t=0.19 0:43:19
 .         g notindep_dirman = 1-indep_dirman
 (1 missing value generated)
-r; t=0.00 17:46:01
+r; t=0.00 0:43:19
 . 
 .         *** the new independence data has adtl firm years, so a few variables need to be updated 
 .         
 .         drop firstdirfirmyear lastdirfirmyear           // update to reflect new director obs
-r; t=0.01 17:46:01
+r; t=0.01 0:43:19
 .         bysort cusip dir_id (fyear): egen firstdirfirmyear = min(fyear)
-r; t=0.12 17:46:01
+r; t=0.12 0:43:19
 .         bysort cusip dir_id (fyear): egen lastdirfirmyear = max(fyear)
-r; t=0.04 17:46:01
+r; t=0.05 0:43:19
 .         
 .         drop firstfirmyear lastfirmyear                 // update to reflect new director obs
-r; t=0.01 17:46:01
+r; t=0.01 0:43:19
 .         bysort cusip (fyear): egen firstfirmyear = min(fyear)
-r; t=0.09 17:46:01
+r; t=0.10 0:43:20
 .         bysort cusip (fyear): egen lastfirmyear = max(fyear)
-r; t=0.04 17:46:01
+r; t=0.04 0:43:20
 .         
 .         *** create all the director level variables     
 .         
@@ -4062,12 +4087,12 @@ r; t=0.04 17:46:01
 (155,393 missing values generated)
 (155,389 missing values generated)
 (155,389 missing values generated)
-r; t=0.08 17:46:01
+r; t=0.08 0:43:20
 .                 
 .         *** create firm year aggregates based on  the manual classification
 .                         
 .         bysort cusip fyear:     egen SIZE = count(dir_id)
-r; t=0.07 17:46:01
+r; t=0.10 0:43:20
 . 
 .         foreach i in "man" { 
   2. 
@@ -4086,10 +4111,10 @@ r; t=0.07 17:46:01
  12.                 g       ADD_NOT`i'              = SWITCHTO_NOT`i' + HIRE_NOT`i' 
  13.                                 
 .         }
-r; t=0.32 17:46:02
+r; t=0.33 0:43:20
 .         
 . }
-r; t=0.96 17:46:02
+r; t=1.10 0:43:20
 
 . 
 . ********************************************************************************
@@ -4097,24 +4122,24 @@ r; t=0.96 17:46:02
 . ********************************************************************************
 . {       
 .         sort cusip6 fyear
-r; t=0.00 17:46:02
+r; t=0.01 0:43:20
 .         
 .         label variable dir_id                                   `"Director ID variable valid over all years"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable female                                   `"Dummy: director is female"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable outside_public_boards    `"# of outside_public_boards held by board members"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable SIZE                                     `"Firm Year Level: # of directors on the board"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable newobs                                   `"Filled this observation in for the director-cusip combination"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable SIZE_COMP                                `"Firm Year Level: Size of the compensation committee"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable SIZE_NOM                                 `"Firm Year Level: Size of the nominating committee"'
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .         label variable SIZE_AUDIT                               `"Firm Year Level: Size of the audit committee"'        
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 .                 
 .         foreach i in 0 1 2 3 "man" {
   2.         
@@ -4170,26 +4195,26 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 note: label truncated to 80 characters
 note: label truncated to 80 characters
-r; t=0.00 17:46:02
+r; t=0.00 0:43:20
 . }
-r; t=0.01 17:46:02
+r; t=0.01 0:43:20
 
 .         
 .         sort cusip6 fyear dir_id        
-r; t=0.01 17:46:02
+r; t=0.02 0:43:20
 
 .         
 .         save "$dir_lvl_out", replace
 (file temp/dir_level_data.dta not found)
 file temp/dir_level_data.dta saved
-r; t=0.13 17:46:02
+r; t=0.13 0:43:20
 
 .         
 .         desc
 
 Contains data from temp/dir_level_data.dta
  Observations:       169,799                  
-    Variables:           186                  20 Jan 2025 17:46
+    Variables:           186                  21 Jan 2025 00:43
 ----------------------------------------------------------------------------------------------------------------------------------------
 Variable      Storage   Display    Value
     name         type    format    label      Variable label
@@ -4383,7 +4408,7 @@ ADD_NOTman      float   %9.0g                 Firm Year Level: # of Not independ
                                             * indicated variables have notes
 ----------------------------------------------------------------------------------------------------------------------------------------
 Sorted by: cusip6  fyear  dir_id
-r; t=0.00 17:46:02
+r; t=0.01 0:43:20
 
 . 
 . ********************************************************************************
@@ -4391,14 +4416,14 @@ r; t=0.00 17:46:02
 . ********************************************************************************
 . {
 .         use "$dir_lvl_out", clear
-r; t=0.07 17:46:02
+r; t=0.07 0:43:20
 .         
 .         **** Collapse dataset to firm year level
 . 
 .         order *, alpha
-r; t=2.88 17:46:05
+r; t=3.13 0:43:23
 .         collapse (first) name (mean) outside_public_boards ADD_IND0 - SWITCHTO_NOTman , by(cusip fyear)
-r; t=0.19 17:46:05
+r; t=0.29 0:43:24
 .                         
 .         **** we have an ADD_* variable. let's also get the LOSE_* variable
 .         **** and create other variables while we're at it 
@@ -4456,22 +4481,22 @@ r; t=0.19 17:46:05
 (3,016 missing values generated)
 (3,016 missing values generated)
 (3,016 missing values generated)
-r; t=0.02 17:46:05
+r; t=0.02 0:43:24
 .                         
 .         **** prep for output
 .                                 
 .         label variable outside_public_boards    `"mean # of outside_public_boards held by board members"'       
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         label variable SIZE                                     `"# of directors on the board"'
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         label variable name                                             `"company name"'
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         label variable SIZE_AUDIT                               `"# of directors on the audit committee"'
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         label variable SIZE_COMP                                `"# of directors on the compensation committee"'
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         label variable SIZE_NOM                                 `"# of directors on the nominating committee"'
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .                 
 .         foreach i in "0" "1" "2" "3" "man" {
   2.         
@@ -4522,36 +4547,38 @@ note: label truncated to 80 characters
 note: label truncated to 80 characters
 note: label truncated to 80 characters
 note: label truncated to 80 characters
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .                 
 .         rename outside_ mean_outside_directorships
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         rename name firm_name_in_irrc
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         order cusip6 fyear firm_name
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         sort cusip6 fyear       
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         save "$board_lvl_out", replace  
 (file temp/board_level_data.dta not found)
 file temp/board_level_data.dta saved
-r; t=0.01 17:46:05
+r; t=0.00 0:43:24
 . }
-r; t=3.17 17:46:05
+r; t=3.52 0:43:24
 
 . 
 end of do-file
-r; t=10.39 17:46:05
+r; t=12.71 0:43:24
 . }       
-r; t=10.39 17:46:05
+r; t=12.71 0:43:24
 
 . 
 . *************************************************************************
-. * BEGIN: define treatment and reclassifier firms
+. * BEGIN: define non-compliant and reclassifier firms
 . *************************************************************************
-. {
+. 
+. if $using_fake_data == 0 {
+. 
 .         * first, these are matches where the cusip6 fails (bc cusip6 in CCM and ISS disagree),
 .         * but firmname and other info confirms a match
 .         * we will use this lookup table to change the cusip6 in irrc before the merge to CCM
@@ -4559,83 +4586,84 @@ r; t=10.39 17:46:05
 .         import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.09 17:46:05
+r; t=0.12 0:43:24
 .         keep cusip*
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         rename cusip6_irrc cusip6 
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         tempfile ccm_cusip6_lookup
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         save `ccm_cusip6_lookup', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000002.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000002.tmp saved as .dta format
-r; t=0.00 17:46:05
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000002.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000002.tmp saved as .dta format
+r; t=0.00 0:43:24
 . 
 .         * define committee level non-compliance
+.         
 .         use "$dir_lvl_out", clear
-r; t=0.08 17:46:05
+r; t=0.07 0:43:24
 .         rename *man *
-r; t=0.00 17:46:05
+r; t=0.01 0:43:24
 . 
 .         g nom_indep   = indep_dir if nom_membership == 1
 (129,630 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.01 0:43:24
 .         g comp_indep  = indep_dir if comp_membership == 1
 (119,726 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.01 0:43:24
 .         g audit_indep = indep_dir if audit_membership == 1
 (117,833 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.01 0:43:24
 .         g gov_indep = indep_dir   if gov_comm_mem == 1
 (141,133 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         collapse nom_indep comp_indep audit_indep gov_indep, by(cusip6 fyear)
-r; t=0.10 17:46:05
+r; t=0.15 0:43:24
 .         
 .         keep if fyear == 2001 
 (16,210 observations deleted)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         keep if aud < 1 | comp < 1| nom < 1 | gov < 1
 (1,290 observations deleted)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         keep cusip6
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         duplicates drop *, force        
 
 Duplicates in terms of cusip6
 
 (0 observations are duplicates)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         tempfile firms_with_NC_committee        
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         save `firms_with_NC_committee', replace 
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000003.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000003.tmp saved as .dta format
-r; t=0.00 17:46:05
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000003.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000003.tmp saved as .dta format
+r; t=0.00 0:43:24
 . 
 .         * board level reclass and non-compliance with independence majority
 .         
 .         use "$board_lvl_out", clear
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         rename *man * // man suffix denotes IRRC variable with manual checks for independence
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         g R            =  SWITCHTO_IND        if fyear >= 2002 & fyear <= 2006  // sum this over years to get reclassifier
 (10,452 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         g DIST_2001    =  NOT_INDEP - INDEP   if fyear == 2001
 (16,210 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         g t            =  INDEP < NOT_INDEP   if fyear == 2001
 (16,210 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         collapse (mean) R DIST_2001 t (lastnm) firm_name_in_irrc, by(cusip6)
-r; t=0.02 17:46:05
+r; t=0.02 0:43:24
 .         replace R = R > 0 if !missing(R)
 (446 real changes made)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         merge 1:1 cusip using `firms_with_NC_committee', keep(1 3)
 
@@ -4647,24 +4675,24 @@ r; t=0.00 17:46:05
 
     Matched                               510  (_merge==3)
     -----------------------------------------
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         g t_Comm       = t == 1 | _m == 3 // t_Comm is NC_i in the paper
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         drop _m 
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         * require avail info
 .         
 .         egen nmiss = rowmiss(*)
-r; t=0.00 17:46:05
+r; t=0.01 0:43:24
 .         drop if nmiss>0 
 (1,609 observations deleted)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         drop nmiss
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 . 
 .         order cusip6 DIST_2001 R t t_Comm
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         
 .         * update cusip6 to match CCM'R 6 digit cusip 
 .         merge 1:1 cusip6 using `ccm_cusip6_lookup'
@@ -4677,89 +4705,90 @@ r; t=0.00 17:46:05
 
     Matched                                26  (_merge==3)
     -----------------------------------------
-r; t=0.02 17:46:05
+r; t=0.04 0:43:24
 .         replace cusip6 = cusip6_ccm if _m == 3 & !missing(cusip6_ccm)
 (26 real changes made)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         drop cusip6_ccm _m 
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 . 
-.         save "$temp/cusip_R_t_2002_2006.dta", replace
-(file temp/cusip_R_t_2002_2006.dta not found)
-file temp/cusip_R_t_2002_2006.dta saved
-r; t=0.00 17:46:05
+.         save "$temp/cusip_R_t.dta", replace
+(file temp/cusip_R_t.dta not found)
+file temp/cusip_R_t.dta saved
+r; t=0.00 0:43:24
 . }       
-r; t=0.33 17:46:05
+r; t=0.45 0:43:24
 
 . *************************************************************************
-. * BEGIN: create firm-year panel > $temp/fy_panel_nobandwidth
+. * BEGIN: create firm-year panel > $temp/fy_panel
 . * build Table 1 as we go (Sample Selection Criteria aka "waterfall")
 . *************************************************************************
-. {
+. 
+. if $using_fake_data == 0 {
 .         
 .         * get gvkey fyear xsga from manual work (doesn't impact conclusions, but is correct data)
 . 
 .         import excel using "$sga_handcollection", clear ///
 >                  cellrange(A1:P522)
 (16 vars, 522 obs)
-r; t=0.05 17:46:05
+r; t=0.08 0:43:24
 .         foreach v of varlist * {
   2.            local vname = strtoname(`v'[1])
   3.            rename `v' `vname'
   4.         }
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         drop in 1
 (1 observation deleted)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         keep gvkey fyear xsga2 
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         destring *, replace
 gvkey: all characters numeric; replaced as long
 fyear: all characters numeric; replaced as int
 xsga2: all characters numeric; replaced as double
 (255 missing values generated)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         tempfile new_sga_data
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         save `new_sga_data'     
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000004.tmp saved as .dta format
-r; t=0.00 17:46:05
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000004.tmp saved as .dta format
+r; t=0.00 0:43:24
 .                 
 .         * start waterfall "log" file 
 . 
 .         cap file close waterfall
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         file open waterfall using "$output_folder/T1_waterfall.txt", write text replace
 (file outputs/T1_waterfall.txt not found)
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 . 
 .         file write waterfall "\begin{tabular}{lcc}" _n
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         file write waterfall "\toprule" _new
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 . 
 .         file write waterfall "Step " _column(55) "& " "N " _column(70) "& " "Number of firms \\" _n
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 .         file write waterfall "\midrule" _new
-r; t=0.00 17:46:05
+r; t=0.00 0:43:24
 . 
 . *** load CCM 
 . 
 . {
 .         // start from CCM
 .         use if fyear >= 1997 & fyear <= 2006 using "$ccm_raw", clear
-r; t=1.43 17:46:07
+r; t=1.55 0:43:26
 .         
 .         // initial panel without  duplicates
 .         destring gvkey, replace
 gvkey: all characters numeric; replaced as long
-r; t=0.50 17:46:07
+r; t=0.54 0:43:26
 .         duplicates drop gvkey fyear, force 
 
 Duplicates in terms of gvkey fyear
 
 (771 observations deleted)
-r; t=0.14 17:46:07
+r; t=0.17 0:43:27
 . 
 .         distinct gvkey if fyear >= 1999
 
@@ -4767,25 +4796,25 @@ r; t=0.14 17:46:07
        |      total   distinct
 -------+----------------------
  gvkey |      55577      10774
-r; t=0.12 17:46:07
+r; t=0.16 0:43:27
 .         file write waterfall "CRSP-Compustat Merged (CCM) fiscal year 1999-2006 " _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)  
 > %9.0fc (`r(ndistinct)') " \\"      _n
-r; t=0.00 17:46:07
+r; t=0.00 0:43:27
 . 
 .         // drop financial outliers
 .         drop if (at < 5) | (sale < 5) | (dlc + dltt > at) 
 (5,481 observations deleted)
-r; t=0.08 17:46:07
+r; t=0.08 0:43:27
 .         noi di "low at sale, high lev"  
 low at sale, high lev
-r; t=0.00 17:46:08
+r; t=0.01 0:43:27
 .         noi     distinct gvkey if fyear >= 1999  // low at sale, high lev 
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |      51680      10148
-r; t=0.10 17:46:08
+r; t=0.15 0:43:27
 .                 
 .         distinct gvkey if fyear >= 1999
 
@@ -4793,39 +4822,39 @@ r; t=0.10 17:46:08
        |      total   distinct
 -------+----------------------
  gvkey |      51680      10148
-r; t=0.11 17:46:08
+r; t=0.11 0:43:27
 .         file write waterfall "Assets and Sales \$\geq\$ \\$5m, book leverage \$\leq\$ 1 " _column(55) "& "  %9.0fc (`r(N)') " & "_colu
 > mn(70)  %9.0fc (`r(ndistinct)') " \\"      _n
-r; t=0.00 17:46:08
+r; t=0.00 0:43:27
 .         
 .         // must be NYSE or NASDAQ   
 .         // CCM exchg is header (current, as of download!) not historical
 .         // use crsp exchcd instead 
 . 
 .         preserve 
-r; t=0.10 17:46:08
+r; t=0.15 0:43:27
 .                 use permno date exchcd if year(date) >= 1997 & year(date) <= 2006  /// 
 >                         using "$crsp_monthly", clear
-r; t=0.67 17:46:08
+r; t=1.08 0:43:28
 .                                 
 .                 g fyear = year(date)    
-r; t=0.01 17:46:09
+r; t=0.01 0:43:28
 .                 rename permno lpermno
-r; t=0.00 17:46:09
+r; t=0.00 0:43:28
 .                 collapse (firstnm) exchcd , by(lp fy)
-r; t=0.12 17:46:09
+r; t=0.13 0:43:28
 .                 tempfile perm_year_exchcd 
-r; t=0.00 17:46:09
+r; t=0.00 0:43:28
 .                 save `perm_year_exchcd'
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000006.tmp saved as .dta format
-r; t=0.00 17:46:09
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000006.tmp saved as .dta format
+r; t=0.00 0:43:28
 .         restore
-r; t=0.02 17:46:09
+r; t=0.05 0:43:29
 .                 
 .         bysort lpermno fyear: drop if _N == _n & _N > 1 // drops 2 obs for firms that moved fiscal report form june to dec 1998 for 19
 > 98 fyear 
 (2 observations deleted)
-r; t=0.16 17:46:09
+r; t=0.20 0:43:29
 .         merge 1:1 lpermno fyear using  `perm_year_exchcd', keep(1 3) nogen
 
     Result                      Number of obs
@@ -4836,20 +4865,20 @@ r; t=0.16 17:46:09
 
     Matched                            67,103  
     -----------------------------------------
-r; t=0.03 17:46:09
+r; t=0.03 0:43:29
 .         keep if exchcd == 1 | exchcd == 3
 (6,393 observations deleted)
-r; t=0.06 17:46:09
+r; t=0.06 0:43:29
 .         noi di "nyse / nasdaq firms"                    
 nyse / nasdaq firms
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         noi     distinct gvkey if fyear >= 1999
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |      46602       9248
-r; t=0.10 17:46:09
+r; t=0.10 0:43:29
 .         // nyse/nasdaq
 .                 
 .         distinct gvkey if fyear >= 1999 
@@ -4858,10 +4887,10 @@ r; t=0.10 17:46:09
        |      total   distinct
 -------+----------------------
  gvkey |      46602       9248
-r; t=0.10 17:46:09
+r; t=0.11 0:43:29
 .         file write waterfall "NYSE and NASDAQ listed firm-years " _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)  %9.0fc (`r(ndist
 > inct)') " \\"      _n     
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         
 .         // require sufficient prof_a observations 
 .         // count in pre >= 3 and count in post >= 3
@@ -4871,40 +4900,40 @@ r; t=0.00 17:46:09
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.06 17:46:09
+r; t=0.07 0:43:29
 .         g       prof_a                          = oibdp/at
 (6,275 missing values generated)
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         drop if missing(prof_a) 
 (6,275 observations deleted)
-r; t=0.05 17:46:09
+r; t=0.06 0:43:29
 .         
 .         g temp1 = fyear if !missing(prof_a) & fyear <= 2002 & fyear >= 1999
 (31,856 missing values generated)
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         g temp2 = fyear if !missing(prof_a) & fyear >  2002
 (35,472 missing values generated)
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         egen count1 = count(temp1), by(gvkey)
-r; t=0.01 17:46:09
+r; t=0.01 0:43:29
 .         egen count2 = count(temp2), by(gvkey)
-r; t=0.01 17:46:09
+r; t=0.01 0:43:29
 .         keep if count1 >= 3 & count2 >= 3  
 (21,013 observations deleted)
-r; t=0.04 17:46:09
+r; t=0.03 0:43:29
 .         drop temp1 temp2 count1 count2
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 . 
 .         noi di "prof_a non-missing requirements" 
 prof_a non-missing requirements
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         noi     distinct gvkey if fyear >= 1999 
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |      27863       3574
-r; t=0.05 17:46:09
+r; t=0.05 0:43:29
 .         noi     tab fyear        
 
 Data Year - |
@@ -4922,7 +4951,7 @@ Data Year - |
        2006 |      3,276        9.78      100.00
 ------------+-----------------------------------
       Total |     33,502      100.00
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .                 
 .         distinct gvkey if fyear >= 1999 
 
@@ -4930,40 +4959,40 @@ r; t=0.00 17:46:09
        |      total   distinct
 -------+----------------------
  gvkey |      27863       3574
-r; t=0.05 17:46:09
+r; t=0.05 0:43:29
 .         file write waterfall "Firm has at least 3 non-missing ROA in pre and post " _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)
 >   %9.0fc (`r(ndistinct)') " \\"    _n
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         
 .         // sic restriction
 .         
 .         destring sic, replace
 sic: all characters numeric; replaced as int
-r; t=0.05 17:46:09
+r; t=0.05 0:43:29
 .         replace sich = sic if sich == . 
 (1,996 real changes made)
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         drop sic
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         rename sich sic
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         g sic3 = floor(sic/10)  
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         g sic2 = floor(sic3/10)
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         drop if (sic3 >= 490 & sic3 <= 494) | (sic3 >= 600 & sic3 <= 699) 
 (7,524 observations deleted)
-r; t=0.02 17:46:09
+r; t=0.02 0:43:29
 .         noi di "sic req"                        
 sic req
-r; t=0.00 17:46:09
+r; t=0.00 0:43:29
 .         noi     distinct gvkey if fyear >= 1999 // sic 
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |      21581       2791
-r; t=0.04 17:46:10
+r; t=0.04 0:43:29
 . 
 .         distinct gvkey if fyear >= 1999 
 
@@ -4971,10 +5000,10 @@ r; t=0.04 17:46:10
        |      total   distinct
 -------+----------------------
  gvkey |      21581       2791
-r; t=0.05 17:46:10
+r; t=0.04 0:43:30
 .         file write waterfall "Drop SIC 49 and 60-69 " _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)  %9.0fc (`r(ndistinct)') " \\
 > "  _n
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 
 .         // merge in execucomp vars
 .         
@@ -4989,7 +5018,7 @@ r; t=0.00 17:46:10
 
     Matched                            11,442  
     -----------------------------------------
-r; t=0.03 17:46:10
+r; t=0.03 0:43:30
 .         
 .         // update sga data
 .         
@@ -5003,80 +5032,80 @@ r; t=0.03 17:46:10
 
     Matched                               521  (_merge==3)
     -----------------------------------------
-r; t=0.07 17:46:10
+r; t=0.11 0:43:30
 .         replace xsga = xsga2 if _m == 3
 (290 real changes made, 47 to missing)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         drop _m xsga2
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         // define CCM vars and labels
 .         
 .         g   prof_sale           = oibdp / sale  
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       l_a                 = log(at)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g   xrd_a               = xrd  / at 
 (9,532 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         replace xrd_a = 0 if xrd_a == .
 (9,532 real changes made)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g   capx_a              = capx / at
 (290 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       td_a                            = (dlc+dltt)/at 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       mve                                     = csho*prcc_f
 (46 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       td_mve                          = (dlc+dltt)/(dlc+dltt+mve)
 (46 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       sga_a                           = xsga/at // denom: l_sale  in lrz
 (2,025 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       cash_a                          = che/at
 (5 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       q                                       = (at - ceq + (csho*prcc_f) - txdb)/at // KZ 1997
 (1,333 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .  
 .         * profit margin decomps 
 .         g       cogs_sale           = cogs/sale
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       sga_sale            = xsga/sale
 (2,025 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       xrd_sale            = xrd/sale          
 (9,532 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .  
 .         * working cap mgmt 
 .         g       fixed_asset_turn    = sale/ppent
 (30 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       asset_turn          = sale/at 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       ar_turn             = sale/rect
 (380 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       invt_turn           = cogs/invt 
 (4,208 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       ap_turn             = cogs/ap
 (36 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       dioh                            = invt/(cogs/365)
 (115 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       dso                             = rect / (sale/365)
 (90 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       ap_days                         = ap / (cogs/365)
 (3 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         *ccc defined below after winsorizing dso, dioh, ap_days  
 . 
 .         * employee productivity panel 
@@ -5085,61 +5114,61 @@ r; t=0.00 17:46:10
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:10
+r; t=0.01 0:43:30
 .         g       prof_emp                        = oibdp/((emp + L.emp)/2)  
 (3,741 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.01 0:43:30
 .         g       sale_emp                        = sale /((emp + L.emp)/2) 
 (3,741 missing values generated)
-r; t=0.01 17:46:10
+r; t=0.01 0:43:30
 .         g       l_emp                           = log(   (emp + L.emp)/2)       
 (3,741 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g       sales_g                         = D.sale/L.sale
 (2,904 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.01 0:43:30
 .         foreach v in sale_emp prof_emp {
   2.                 replace `v' = `v'/1000 // scale /EMP variables, so that they are $ per emp. 
   3.                 // sale, prof, and ppent are in millions, while emp is in thousands
 .         }
 (22,237 real changes made)
 (22,235 real changes made)
-r; t=0.01 17:46:10
+r; t=0.00 0:43:30
 .  
 .         * used in online apx table
 .         g gdwlip_impairment_bool = !missing(gdwlip)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .  
 .         lab var td_a                    "Book Leverage (DLC + DLTT)/at"
-r; t=0.00 17:46:10
+r; t=0.01 0:43:30
 .         lab var td_mve                  "Mkt Leverage (DLC+DLTT)/(DLC+DLTT+MVE)"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var l_a                     "Log Book Assets"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var prof_a                  "Profitablity oibdp/at"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var q                       "Q: (at - ceq + (csho*prcc_f) - txdb)/at"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var prof_a                  "ROA"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var prof_sale               "Profit Margin"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var l_a                     "Log(Assets)"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var td_a                    "Book Leverage"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var xrd_a                   "R&D / Assets"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var capx_a                  "CAPX / Assets" 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var tdc1                    "TDC1"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var tdc2                    "TDC2"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var total_curr              "Salary+Bonus"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         lab var option_awards_blk       "OptionsGranted"
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         * winsorize CCM based variables 
 .         
@@ -5148,18 +5177,18 @@ r; t=0.00 17:46:10
 >         */ l_emp sales_g sale_emp prof_emp cogs_sale sga_sale xrd_sale dioh dso ap_days {
   2.                 cap winsor `var' 1
   3.         }       
-r; t=0.11 17:46:10
+r; t=0.15 0:43:30
 .         
 .         g ccc = dioh + dso - ap_days    
 (207 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         // must be in irrc, with t and R defined 
 .         // the CUSIPs in the board data do not match to multiple gvkeys, so we can just go ahead and merge
 .         
 .         g       cusip6                          = substr(cusip,1,6)
-r; t=0.00 17:46:10
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+r; t=0.00 0:43:30
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 (variable cusip6 was str6, now str8 to accommodate using data's values)
 
     Result                      Number of obs
@@ -5167,7 +5196,7 @@ r; t=0.00 17:46:10
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.08 17:46:10
+r; t=0.09 0:43:30
 .         duplicates report cusip6 fyear // < proves that CUSIPs in the board data do not match to multiple gvkeys
 
 Duplicates in terms of cusip6 fyear
@@ -5177,20 +5206,20 @@ Duplicates in terms of cusip6 fyear
 ----------+---------------------------
         1 |         8923             0
 --------------------------------------
-r; t=0.02 17:46:10
+r; t=0.02 0:43:30
 .         
 .         sort gvkey fyear        
-r; t=0.00 17:46:10
+r; t=0.01 0:43:30
 .         noi di "in irrc and can define t and R and DIST_2001"           
 in irrc and can define t and R and DIST_2001
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         noi     distinct gvkey if fyear >= 1999 // in irrc (2001 and one of 2002-2006)
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |       7205        912
-r; t=0.02 17:46:10
+r; t=0.02 0:43:30
 .         noi     tab fyear       // in irrc (2001 and one of 2002-2006)
 
 Data Year - |
@@ -5208,7 +5237,7 @@ Data Year - |
        2006 |        863        9.67      100.00
 ------------+-----------------------------------
       Total |      8,923      100.00
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 . 
 .         distinct gvkey if fyear >= 1999 
 
@@ -5216,32 +5245,32 @@ r; t=0.00 17:46:10
        |      total   distinct
 -------+----------------------
  gvkey |       7205        912
-r; t=0.01 17:46:10
+r; t=0.02 0:43:30
 .         file write waterfall "In IRRC database and \$R_i\$ and \$NC_i\$ defined " _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)  
 > %9.0fc (`r(ndistinct)') " \\"      _n
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 . 
 .         // merge in board-level vars 
 .         
 .         preserve 
-r; t=0.01 17:46:10
+r; t=0.01 0:43:30
 .                 * to update cusip6 to match CCM'R 6 digit cusip 
 .                 import delim using "$iss_ccm_cusip", clear varn(1)      
 (encoding automatically selected: ISO-8859-1)
 (4 vars, 26 obs)
-r; t=0.02 17:46:10
+r; t=0.03 0:43:30
 .                 rename cusip6_irrc cusip6 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 tempfile ccm_cusip6_lookup
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 save `ccm_cusip6_lookup', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000008.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000008.tmp saved as .dta format
-r; t=0.00 17:46:10
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000008.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000008.tmp saved as .dta format
+r; t=0.00 0:43:30
 . 
 .                 * update cusip6 to match CCM'R 6 digit cusip 
 .                 use "$board_lvl_out", clear
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 merge m:1 cusip6 using `ccm_cusip6_lookup'
 
     Result                      Number of obs
@@ -5252,23 +5281,23 @@ r; t=0.00 17:46:10
 
     Matched                               243  (_merge==3)
     -----------------------------------------
-r; t=0.04 17:46:10
+r; t=0.07 0:43:30
 .                 replace cusip6 = cusip6_ccm if _m == 3 & !missing(cusip6_ccm)
 (243 real changes made)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 drop cusip6_ccm _m 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 rename *man *
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 . 
 .                 tempfile board_stats
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .                 save `board_stats', replace
-(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000009.tmp not found)
-file C:\Users\DONSLA~1\AppData\Local\Temp\ST_68d8_000009.tmp saved as .dta format
-r; t=0.01 17:46:10
+(file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000009.tmp not found)
+file C:\Users\DONSLA~1\AppData\Local\Temp\ST_194c_000009.tmp saved as .dta format
+r; t=0.01 0:43:30
 .         restore
-r; t=0.01 17:46:10
+r; t=0.01 0:43:30
 .         
 .         merge m:1 cusip6 fyear using `board_stats', keep(1 3) nogen
 
@@ -5280,14 +5309,14 @@ r; t=0.01 17:46:10
 
     Matched                             8,567  
     -----------------------------------------
-r; t=0.08 17:46:10
+r; t=0.09 0:43:30
 .         
 .         g incoming_dir = HIRE_IND + HIRE_NOT
 (356 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         g outgoing_dir = LASTYEAR_IND + LASTYEAR_NOT
 (356 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         foreach v in incoming outgoing {
   2.         g `v'_bool = `v'_dir > 0 if !missing(`v'_dir)
@@ -5297,22 +5326,22 @@ r; t=0.00 17:46:10
 (356 missing values generated)
 (356 missing values generated)
 (356 missing values generated)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         // keep enough id info, and created vars 
 .         
 .         qui ds
-r; t=0.04 17:46:10
+r; t=0.06 0:43:30
 .         local last_var = word("`r(varlist)'", `c(k)') // gets name of last var
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         keep gvkey-conm  cik        /// ID vars from CCM
 >              prof_a-`last_var'   //  our first created var is prof_a 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         // add lifecycle vars
 .         
 .         g datadateyear = year(datadate)
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         merge m:1 gvkey datadateyear using inputs/LifeCycles, keep(1 3) nogen
 
     Result                      Number of obs
@@ -5323,30 +5352,30 @@ r; t=0.00 17:46:10
 
     Matched                             8,841  
     -----------------------------------------
-r; t=0.06 17:46:10
+r; t=0.09 0:43:30
 .         sort gvkey fyear        
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         
 .         // drop t R so that you must be explicit every time you load panel
 .         drop R t t_Comm firm_name_in_irrc
-r; t=0.00 17:46:10
-.         save "$temp/fy_panel_nobandwidth", replace
-(file temp/fy_panel_nobandwidth.dta not found)
-file temp/fy_panel_nobandwidth.dta saved
-r; t=0.01 17:46:10
+r; t=0.00 0:43:30
+.         save "$temp/fy_panel", replace
+(file temp/fy_panel.dta not found)
+file temp/fy_panel.dta saved
+r; t=0.00 0:43:30
 . }
-r; t=5.01 17:46:10
+r; t=6.10 0:43:30
 . 
 .         * finish waterfall table - get to baseline regression
 . 
-.         merge m:1 cusip6 using "$temp/cusip_R_t_2002_2006.dta", keep(3) nogen 
+.         merge m:1 cusip6 using "$temp/cusip_R_t.dta", keep(3) nogen 
 
     Result                      Number of obs
     -----------------------------------------
     Not matched                             0
     Matched                             8,923  
     -----------------------------------------
-r; t=0.03 17:46:10
+r; t=0.03 0:43:30
 . 
 .         define_DDD_vars -5 5 2003 
 
@@ -5377,24 +5406,24 @@ r; t=0.03 17:46:10
          7 |        10          0 |        10 
 -----------+----------------------+----------
      Total |     3,508      5,415 |     8,923 
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 .         distinct gvkey if close  & fyear >= 1999
 
        |        Observations
        |      total   distinct
 -------+----------------------
  gvkey |       4387        556
-r; t=0.00 17:46:10
+r; t=0.01 0:43:30
 .         file write waterfall "Less than 3 director replacements from 50\% board independence in 2001 " _column(55) "& "  %9.0fc (`r(N)
 > ') " & "_column(70)  %9.0fc (`r(ndistinct)') " \\"         _n
-r; t=0.00 17:46:10
+r; t=0.00 0:43:30
 . 
 .         xtset gvkey fyear       
 
 Panel variable: gvkey (unbalanced)
  Time variable: fyear, 1997 to 2006, but with gaps
          Delta: 1 unit
-r; t=0.01 17:46:10
+r; t=0.01 0:43:30
 .         noi reghdfe prof_a Rpt_Comm Rp pt_Comm if   close & inrange(fyear, 1999,2006), cluster(gvkey)  absorb(gvkey i.fyear#i.sic2)   
 >           
 (dropped 50 singleton observations)
@@ -5427,7 +5456,7 @@ Absorbed degrees of freedom:
    fyear#sic2 |       364           0         364     |
 ------------------------------------------------------+
 * = FE nested within cluster; treated as redundant for DoF computation
-r; t=0.50 17:46:11
+r; t=1.21 0:43:32
 . 
 .         distinct gvkey if e(sample)
 
@@ -5435,18 +5464,18 @@ r; t=0.50 17:46:11
        |      total   distinct
 -------+----------------------
  gvkey |       4337        551
-r; t=0.01 17:46:11
+r; t=0.01 0:43:32
 .         file write waterfall "In baseline regression (due to fixed effects)" _column(55) "& "  %9.0fc (`r(N)') " & "_column(70)  %9.0f
 > c (`r(ndistinct)') " \\"   _n
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 . 
 .         file write waterfall "\end{tabular}" _n
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 . 
 .         file close waterfall
-r; t=0.00 17:46:11
+r; t=0.00 0:43:32
 . }
-r; t=5.62 17:46:11
+r; t=7.47 0:43:32
 
 . 
 . *************************************************************************
@@ -5457,5 +5486,5 @@ r; t=5.62 17:46:11
       name:  <unnamed>
        log:  C:\Users\DonsLaptop\Desktop\BowenTaillard_BoardReplication\outputs/log_FormatAndPrepData.log
   log type:  text
- closed on:  20 Jan 2025, 17:46:11
+ closed on:  21 Jan 2025, 00:43:32
 ----------------------------------------------------------------------------------------------------------------------------------------
