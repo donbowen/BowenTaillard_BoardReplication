@@ -1,0 +1,6 @@
+inputs_noupload/*
+old/*
+event-level_CAPM.dta
+permno_dates_for_eventus.txt
+temp/*
+~*

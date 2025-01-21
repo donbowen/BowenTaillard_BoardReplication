@@ -1,0 +1,13 @@
+\begin{tabular}{lcc}
+\toprule
+Step                                                  & N            & Number of firms \\
+\midrule
+CRSP-Compustat Merged (CCM) fiscal year 1999-2006     &    55,577 &     10,774 \\
+Assets and Sales $\geq$ \$5m, book leverage $\leq$ 1  &    51,680 &     10,148 \\
+NYSE and NASDAQ listed firm-years                     &    46,602 &      9,248 \\
+Firm has at least 3 non-missing ROA in pre and post   &    27,863 &      3,574 \\
+Drop SIC 49 and 60-69                                 &    21,581 &      2,791 \\
+In IRRC database and $R_i$ and $NC_i$ defined         &     7,205 &        912 \\
+Less than 3 director replacements from 50\% board independence in 2001 &     4,387 &       556 \\
+In baseline regression (due to fixed effects)         &     4,337 &        551 \\
+\end{tabular}
