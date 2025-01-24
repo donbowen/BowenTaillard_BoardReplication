@@ -82,10 +82,13 @@ Versions:  Stata 18.0MP, schemepack v1.4, grc1leg2 v2.26, reghdfe v5.7.3
 * BEGIN: presets
 *************************************************************************
 	
-	* if needed, install:
+	* if needed, install, or ", replace" to update 
 	*ssc install reghdfe
 	*ssc install schemepack
 	*ssc install grc1leg2
+	*ssc install tabstatmat
+	*ssc install center 
+	*ssc install coefplot
 	
 	* settings
 	set rmsg on
